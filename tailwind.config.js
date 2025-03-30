@@ -9,23 +9,32 @@ export default {
       colors: {
         primary: "#b5afaf",
         secondary: "#b9b9b9",
-        dark: "#020101"
+        dark: "#020101",
       },
       fontSize: {
         base: "16px",
         sm: "12px",
-        lg: "30px"
+        lg: "30px",
       },
       boxShadow: {
-        custom: "0px 0px 10px 2px rgba(0, 0, 0, 0.2)"
+        custom: "0px 0px 10px 2px rgba(0, 0, 0, 0.2)",
       },
       borderRadius: {
-        lg: "15px"
+        lg: "15px",
       },
       backgroundImage: {
-        'signup-pattern': "url('/images/sign_up.jpg')"
-      }
-    }
+        'signup-pattern': "url('/images/sign_up.jpg')",
+      },
+      keyframes: {
+        'fade-up': {
+          '0%': { opacity: 0, transform: 'translateY(20px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        'fade-up': 'fade-up 5s ease-out',
+      },
+    },
   },
   plugins: [],
-}
+};
