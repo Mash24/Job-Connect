@@ -29,7 +29,7 @@ import TITLE from '../components/common/Title'
         name: 'Mark T.',
         title: 'Freelancer | UI/UX Designer',
         quote: "As a freelancer, finding consistent gigs was tough. Job Connect gave me three high-paying clients in my first month!",
-        rating: 5,
+        rating: 4,
         badge: 'Top Freelancer',
         image: '/images/mark.jpg'
       },
@@ -105,7 +105,7 @@ const Testimonials = () => {
         <Swiper
           modules = {[Navigation, Autoplay]}
           spaceBetween = {30}
-          SlidesPerView = {1}
+          slidesPerView = {1}
           loop = {true}
           navigation
           autoplay = {{ delay: 5000, disableOnInteraction: false }}

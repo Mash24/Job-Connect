@@ -5,6 +5,7 @@ import HowItWorks from '../Landing/HowItWorks';
 import Testimonials from '../Landing/Testimonials';
 import FinalCTA from '../Landing/FinalCTA';
 import Footer from '../components/layouts/Footer';
+import FAQ from '../Landing/FAQ';
 
 const Home = () => {
   return (
@@ -13,6 +14,7 @@ const Home = () => {
       <Features />
       <HowItWorks />
       <Testimonials />
+      <FAQ />
       <FinalCTA />
       <Footer />
     </>
