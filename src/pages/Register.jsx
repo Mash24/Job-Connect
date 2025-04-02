@@ -61,7 +61,7 @@ const Register = () => {
                 confirmPassword: ""
             });
 
-                 navigate('/dashboard');
+                 navigate('/select-role');
 
             } catch (error) {
                 setError(error.message);
