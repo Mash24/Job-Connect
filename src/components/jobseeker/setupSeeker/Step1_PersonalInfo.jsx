@@ -26,7 +26,13 @@ const Step1_PersonalInfo = ({ onNext }) => {
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: files? files[0]:value }));
+
+        if (files && files[0]) {
+            const file = files[0];
+            setFormData((prev) => ({ ...prev, [name]: file, profilePicturePreview: URL.createObjectURL(file), }));
+        } else {
+            setFormData((prev) => ({ ...prev, [name]: value }));
+            }
     };
 
     const handleSubmit = async (e) => {
@@ -89,7 +95,7 @@ const Step1_PersonalInfo = ({ onNext }) => {
                 placeholder="Email"
                 value={formData.email}
                 readOnly
-                className="w-full border px-4 py-2 rounded bg-gray-100 cursor-not allowed" 
+                className="w-full border px-4 py-2 rounded bg-gray-100 cursor-not-allowed" 
             />
 
             <input 
@@ -102,21 +108,28 @@ const Step1_PersonalInfo = ({ onNext }) => {
                 className="w-full border px-4 py-2 rounded" 
             />
 
+            <label htmlFor="dob" className='block text-gray-700 font-medium'>Date of Birth</label>
             <input 
-            type="text" 
-            name='location'
-            placeholder='Location (city, Country'
-            value={formData.location}
+            type="date"
+            id='dob' 
+            name='dob'
+            value={formData.dob}
             onChange={handleChange}
-            className="w-full border px-4 py-2 rounded" 
+            max={new Date(). toISOString().split("T")[0]} // Restricts fure dates. Late filter to ensure no one below age of 18 years can proceed
+            className="w-full border px-4 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" 
             />
 
+            <label htmlFor="profilePicture" className='block text-gray-700 font-medium'>Upload Profile Picture</label>
             <input 
             type="file"
             name="profilePicture"
             onChange={handleChange}
-            className="w-full" 
+            className="w-full px-4" 
             />
+
+            {formData.profilePicturePreview && (
+                <img src={formData.profilePicturePreview} alt="Profile Preview" className="w-auto h-24 object-cover border-2 border-gray-300 shadow-md rounded-full mt-2" />
+            )}
 
             <div className="flex justify-end">
                 <button 
