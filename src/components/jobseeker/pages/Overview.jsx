@@ -6,6 +6,7 @@ import StatCards from '../dashboard/StatCards';
 import JobSuggestions from '../dashboard/JobSuggestions';
 import SavedJobs from '../dashboard/SavedJobs';
 import Messages from '../dashboard/Messages';
+import AllJobs from '../../jobs/AllJobs';
 
 const Overview = () => {
   return (
@@ -16,6 +17,7 @@ const Overview = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <JobSuggestions />
+        <AllJobs /> {/* ✅ Job Listings page */}
         <SavedJobs />
       </div>
 

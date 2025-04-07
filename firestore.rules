@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 👤 USERS (All basic profiles)
+    match /users/{userId} {
+      // Allow public read if document has public:true
+      allow read: if resource.data.public == true || request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // 🎯 JOB SEEKER PROFILES
+    match /jobSeekers/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // 🏢 EMPLOYER PROFILES
+    match /employers/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // 💼 JOB POSTS
+    match /jobs/{jobId} {
+      // Allow reading for all logged-in users
+      allow read: if request.auth != null;
+
+      // Only allow creation by users with "employer" role
+      allow create: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "employer";
+
+      // Only the original creator (employer) can update/delete
+      allow update, delete: if request.auth != null &&
+        request.auth.uid == resource.data.userId;
+    }
+
+    // 📄 JOB APPLICATIONS
+    match /applications/{applicationId} {
+      allow read, write: if request.auth != null &&
+        (
+          resource.data == null || // allow on create
+          request.auth.uid == resource.data.seekerId ||
+          request.auth.uid == resource.data.employerId
+        );
+    }
+
+   // 💬 MESSAGES
+        match /messages/{messageId} {
+          allow read, write: if request.auth != null &&
+            (
+              request.auth.uid == resource.data.senderId ||
+              request.auth.uid == resource.data.receiverId
+            );
+        }
+
+        // ✅ SUPPORT CHAT (FIXED)
+        match /support/{msgId} {
+          allow read, write: if request.auth != null &&
+            (
+              (!exists(/databases/$(database)/documents/support/$(msgId)) &&
+                request.resource.data.userId == request.auth.uid)
+              ||
+              (exists(/databases/$(database)/documents/support/$(msgId)) &&
+                resource.data.userId == request.auth.uid)
+            );
+        }
+
+
+    // 👮 SUPER ADMIN AREA
+    match /admin/{docId} {
+      allow read, write: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin";
+    }
+  }
+}
