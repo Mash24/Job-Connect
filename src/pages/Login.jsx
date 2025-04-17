@@ -6,7 +6,6 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 import TITLE from '../components/common/Title';
 import BackgroundWrapper from '../components/layouts/BackgroundWrapper';
-import { getRedirectPathForUser } from '../utils/getRedirectPathForUser'; // ✅ import helper
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,11 +17,11 @@ const Login = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [welcomeMsg, setWelcomeMsg] = useState(''); // ✅ welcome message state
+  const [welcomeMsg, setWelcomeMsg] = useState('');
 
   useEffect(() => {
     if (welcomeMsg) {
-      const timer = setTimeout(() => setWelcomeMsg(''), 3000); // Hide after 3 sec
+      const timer = setTimeout(() => setWelcomeMsg(''), 3000);
       return () => clearTimeout(timer);
     }
   }, [welcomeMsg]);
@@ -41,10 +40,22 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      setWelcomeMsg(`Welcome, ${user.displayName || user.email.split('@')[0]}!`); // ✅ Show welcome
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.exists() ? userSnap.data() : {};
+      const role = userData?.role;
 
-      const path = await getRedirectPathForUser(user); // ✅ use helper
-      setTimeout(() => navigate(path), 2000); // Redirect after 2 sec
+      setWelcomeMsg(`Welcome, ${userData.firstname || user.email.split('@')[0]}!`);
+
+      if (role === 'super-admin') {
+        navigate('/admin/dashboard');
+      } else if (role === 'seeker') {
+        navigate('/dashboard-seeker');
+      } else if (role === 'employer') {
+        navigate('/dashboard-employer');
+      } else {
+        navigate('/select-role');
+      }
     } catch (err) {
       console.error('Login error:', err);
       if (err.code === 'auth/user-not-found') {
@@ -68,20 +79,33 @@ const Login = () => {
 
       const userDocRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userDocRef);
+      let userData = {};
 
       if (!userSnap.exists()) {
-        await setDoc(userDocRef, {
+        userData = {
           uid: user.uid,
           email: user.email,
           createdAt: new Date().toISOString(),
           role: null,
-        });
+        };
+        await setDoc(userDocRef, userData);
+      } else {
+        userData = userSnap.data();
       }
 
-      setWelcomeMsg(`Welcome, ${user.displayName || user.email.split('@')[0]}!`); // ✅ Show welcome
+      setWelcomeMsg(`Welcome, ${user.displayName || user.email.split('@')[0]}!`);
 
-      const path = await getRedirectPathForUser(user); // ✅ use helper
-      setTimeout(() => navigate(path), 2000); // Redirect after 2 sec
+      const role = userData?.role;
+
+      if (role === 'super-admin') {
+        navigate('/admin/dashboard');
+      } else if (role === 'seeker') {
+        navigate('/dashboard-seeker');
+      } else if (role === 'employer') {
+        navigate('/dashboard-employer');
+      } else {
+        navigate('/select-role');
+      }
     } catch (err) {
       console.error('Google login error:', err);
       setError('Google login failed. Please try again.');
@@ -104,7 +128,7 @@ const Login = () => {
               {welcomeMsg}
             </div>
           )}
-  
+
           {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
           <form onSubmit={handleLogin} className="space-y-4">

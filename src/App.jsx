@@ -1,4 +1,4 @@
-// File: src/App.jsx
+// File: /src/App.jsx
 
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
@@ -14,10 +14,7 @@ import Home from './pages/Home';
 import RoleSelection from './pages/RoleSelection';
 import SetupSeeker from './pages/SetupSeeker';
 
-// Dashboard Route Guards
-import RoleBasedRoute from './routes/RoleBasedRoute';
-
-// Job Seeker Dashboard
+// Seeker Dashboard
 import DashboardSeeker from './pages/DashboardSeeker';
 import Overview from './components/jobseeker/pages/Overview';
 import MyApplication from './components/jobseeker/pages/MyApplication';
@@ -25,7 +22,7 @@ import Support from './components/jobseeker/pages/Support';
 
 // Employer Dashboard
 import DashboardEmployerLayout from './components/employer/dashboard/DashboardEmployerLayout';
-import OverviewEmployer from './components/employer/dashboard/OverviewEmployer'
+import OverviewEmployer from './components/employer/dashboard/OverviewEmployer';
 import JobListing from './components/employer/dashboard/JobListing';
 import PostJobForm from './components/jobs/PostJobForm';
 import Messages from './components/employer/dashboard/Messages';
@@ -34,16 +31,31 @@ import EditJobModal from './components/employer/dashboard/EditJobModal';
 
 import SetupEmployer from './components/employer/setupEmployer/SetupEmployer';
 
-// Admin Support Panel 
-import AdminSupportPage from './components/admin/AdminSupportPage';
-import SupportThreadPage from './components/admin/support/SupportThreadPage';
-// Reuse Support page for both dashboards
+// Route guards
+import RoleBasedRoute from './routes/RoleBasedRoute';
+import AdminRoutes from './routes/AdminRoutes'; // ✅ Admin routing
 
 function App() {
   const location = useLocation();
 
-  // Hide Navbar on dashboard routes
-  const hideNavbar = ['/dashboard-seeker', '/dashboard-employer', '/setup-seeker', '/setup-employer'].some((path) => location.pathname.startsWith(path));
+  const hideNavbarRoutes = [
+    '/dashboard-seeker',
+    '/dashboard-employer',
+    '/setup-seeker',
+    '/setup-employer',
+    '/admin',
+    '/login',
+    '/register',
+    '/reset-password',
+    '/contact',
+    '/select-role',
+    '/support',
+    '/support/:userId',
+  ];
+
+  const hideNavbar = hideNavbarRoutes.some((path) =>
+    location.pathname.startsWith(path)
+  );
 
   return (
     <>
@@ -59,7 +71,7 @@ function App() {
         <Route path="/select-role" element={<RoleSelection />} />
         <Route path="/setup-seeker" element={<SetupSeeker />} />
 
-        {/* Redirect based on user role */}
+        {/* Role-Based Redirect */}
         <Route path="/dashboard" element={<RoleBasedRoute />} />
 
         {/* Seeker Dashboard */}
@@ -83,10 +95,8 @@ function App() {
           <Route path="support" element={<Support />} />
         </Route>
 
-        {/* Admin Support panel */}
-        <Route path="/admin/support" element={<AdminSupportPage />}/>
-        <Route path="/admin/support/:userId" element={<SupportThreadPage />} />
-          
+        {/* ✅ Admin Routes */}
+        {AdminRoutes()}
       </Routes>
     </>
   );
