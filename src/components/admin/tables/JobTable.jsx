@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import StatusBadge from '../shared/StatusBadge';
+import DropdownActionMenu from '../shared/DropdownActionMenu';
+import JobDetailsModal from '../modals/JobDetailsModal';
+import EditJobModal from '../modals/EditJobModal';
 
 const JobTable = ({ jobs }) => {
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [editingJob, setEditingJob] = useState(null);
+
   const confirmAndExecute = async (message, action) => {
     if (window.confirm(message)) {
       try {
@@ -27,130 +33,10 @@ const JobTable = ({ jobs }) => {
     await deleteDoc(jobRef);
   };
 
-  const renderButtons = (job) => {
-    const status = job.status || 'pending'; // default fallback
-
-    switch (status) {
-      case 'pending':
-        return (
-          <>
-            <button
-              onClick={() =>
-                confirmAndExecute('Approve this job?', () =>
-                  handleUpdateStatus(job.id, 'approved')
-                )
-              }
-              className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() =>
-                confirmAndExecute('Reject this job?', () =>
-                  handleUpdateStatus(job.id, 'rejected')
-                )
-              }
-              className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-            >
-              Reject
-            </button>
-            <button
-              onClick={() =>
-                confirmAndExecute('Delete this job?', () =>
-                  handleDelete(job.id)
-                )
-              }
-              className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
-            >
-              Delete
-            </button>
-          </>
-        );
-
-      case 'approved':
-        return (
-          <>
-            <button
-              onClick={() =>
-                confirmAndExecute('Pause this job?', () =>
-                  handleUpdateStatus(job.id, 'paused')
-                )
-              }
-              className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-            >
-              Pause
-            </button>
-            <button
-              onClick={() => alert('✏️ Edit modal coming soon')}
-              className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() =>
-                confirmAndExecute('Delete this job?', () =>
-                  handleDelete(job.id)
-                )
-              }
-              className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
-            >
-              Delete
-            </button>
-          </>
-        );
-
-      case 'rejected':
-        return (
-          <>
-            <button
-              onClick={() => alert('✏️ Edit modal coming soon')}
-              className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() =>
-                confirmAndExecute('Delete this job?', () =>
-                  handleDelete(job.id)
-                )
-              }
-              className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
-            >
-              Delete
-            </button>
-          </>
-        );
-
-      case 'paused':
-        return (
-          <>
-            <button
-              onClick={() =>
-                confirmAndExecute('Resume this job?', () =>
-                  handleUpdateStatus(job.id, 'approved')
-                )
-              }
-              className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded"
-            >
-              Resume
-            </button>
-            <button
-              onClick={() =>
-                confirmAndExecute('Delete this job?', () =>
-                  handleDelete(job.id)
-                )
-              }
-              className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
-            >
-              Delete
-            </button>
-          </>
-        );
-
-      default:
-        return <span className="text-gray-400 italic">No actions</span>;
-    }
-  };
+  const handleViewJob = (job) => setSelectedJob(job);
+  const handleEdit = (job) => setEditingJob(job);
+  const closeViewModal = () => setSelectedJob(null);
+  const closeEditModal = () => setEditingJob(null);
 
   return (
     <div className="overflow-x-auto bg-white shadow rounded-lg">
@@ -171,11 +57,66 @@ const JobTable = ({ jobs }) => {
               <td className="px-4 py-2">
                 <StatusBadge status={job.status} />
               </td>
-              <td className="px-4 py-2 space-x-2">{renderButtons(job)}</td>
+              <td className="px-4 py-2">
+                <DropdownActionMenu
+                  job={job}
+                  onView={() => handleViewJob(job)}
+                  onApprove={() =>
+                    confirmAndExecute('Approve this job?', () =>
+                      handleUpdateStatus(job.id, 'approved')
+                    )
+                  }
+                  onReject={() =>
+                    confirmAndExecute('Reject this job?', () =>
+                      handleUpdateStatus(job.id, 'rejected')
+                    )
+                  }
+                  onPause={() =>
+                    confirmAndExecute('Pause this job?', () =>
+                      handleUpdateStatus(job.id, 'paused')
+                    )
+                  }
+                  onResume={() =>
+                    confirmAndExecute('Resume this job?', () =>
+                      handleUpdateStatus(job.id, 'approved')
+                    )
+                  }
+                  onDelete={() =>
+                    confirmAndExecute('Delete this job?', () =>
+                      handleDelete(job.id)
+                    )
+                  }
+                  onEdit={() => handleEdit(job)}
+                />
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* 🔍 View Job Modal */}
+      {selectedJob && (
+        <JobDetailsModal
+          job={selectedJob}
+          isOpen={true}
+          onClose={closeViewModal}
+          onApprove={() => confirmAndExecute('Approve this job?', () => handleUpdateStatus(selectedJob.id, 'approved'))}
+          onReject={() => confirmAndExecute('Reject this job?', () => handleUpdateStatus(selectedJob.id, 'rejected'))}
+          onPause={() => confirmAndExecute('Pause this job?', () => handleUpdateStatus(selectedJob.id, 'paused'))}
+          onResume={() => confirmAndExecute('Resume this job?', () => handleUpdateStatus(selectedJob.id, 'approved'))}
+          onDelete={() => confirmAndExecute('Delete this job?', () => handleDelete(selectedJob.id))}
+          onEdit={() => handleEdit(selectedJob)}
+        />
+      )}
+
+      {/* ✏️ Edit Job Modal */}
+      {editingJob && (
+        <EditJobModal
+          job={editingJob}
+          isOpen={true}
+          onClose={closeEditModal}
+        />
+      )}
     </div>
   );
 };

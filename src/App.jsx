@@ -35,6 +35,8 @@ import SetupEmployer from './components/employer/setupEmployer/SetupEmployer';
 import RoleBasedRoute from './routes/RoleBasedRoute';
 import AdminRoutes from './routes/AdminRoutes'; // ✅ Admin routing
 
+// import FixOldReports from './utils/FixOldReports';
+
 function App() {
   const location = useLocation();
 
@@ -73,6 +75,7 @@ function App() {
 
         {/* Role-Based Redirect */}
         <Route path="/dashboard" element={<RoleBasedRoute />} />
+        {/* <Route path="/admin/fix-reports" element={<FixOldReports />} /> */}
 
         {/* Seeker Dashboard */}
         <Route path="/dashboard-seeker" element={<DashboardSeeker />}>
