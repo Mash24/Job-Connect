@@ -36,6 +36,7 @@ import RoleBasedRoute from './routes/RoleBasedRoute';
 import AdminRoutes from './routes/AdminRoutes'; // ✅ Admin routing
 
 // import FixOldReports from './utils/FixOldReports';
+import MaintenanceOverlay from './components/common/MaintenanceOverlay';
 
 function App() {
   const location = useLocation();
@@ -61,6 +62,9 @@ function App() {
 
   return (
     <>
+    {/* Global Maintenance Overlay */}
+    <MaintenanceOverlay />
+    
       {!hideNavbar && <Navbar />}
 
       <Routes>

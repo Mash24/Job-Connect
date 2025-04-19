@@ -2,27 +2,21 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 👤 USERS (basic profiles + admin role edits)
+    // 👤 USERS (basic profiles)
     match /users/{userId} {
-      allow read: if request.auth != null;
-
-      allow update: if request.auth != null && (
-        // User can update own profile
+      allow read: if resource.data.public == true || request.auth != null;
+      allow write: if request.auth != null && (
         request.auth.uid == userId ||
-
-        // Super-admin can update any user (e.g., to change role)
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin"
       );
-
-      allow create: if request.auth != null;
     }
 
-    // 🎯 JOB SEEKERS setup
+    // 🎯 JOB SEEKERS
     match /jobSeekers/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // 🏢 EMPLOYERS setup
+    // 🏢 EMPLOYERS
     match /employers/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
@@ -34,17 +28,20 @@ service cloud.firestore {
       allow create: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "employer";
 
-      allow update, delete: if request.auth != null &&
-        request.auth.uid == resource.data.userId;
+      allow update, delete: if request.auth != null && (
+        request.auth.uid == resource.data.userId ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin"
+      );
     }
 
     // 📄 JOB APPLICATIONS
     match /applications/{appId} {
       allow read, write: if request.auth != null &&
         (
-          resource.data == null || // for creation
+          resource.data == null || // on create
           request.auth.uid == resource.data.seekerId ||
-          request.auth.uid == resource.data.employerId
+          request.auth.uid == resource.data.employerId ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin"
         );
     }
 
@@ -57,22 +54,20 @@ service cloud.firestore {
         );
     }
 
-    // 🚨 REPORTS (admin-only access to read)
+    // 🚨 REPORTS (admin viewable, user writable)
     match /reports/{reportId} {
-      allow read: if request.auth != null &&
+      allow read, write: if request.auth != null;
+      allow update, delete: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin";
-
-      allow create: if request.auth != null; // Users can report
-      allow update, delete: if false; // No one modifies existing reports
     }
 
-    // 🆘 SUPPORT MESSAGES (user ↔ admin)
+    // 🆘 SUPPORT MESSAGES (User ↔ Admin)
     match /support/{msgId} {
-      allow create: if request.auth != null &&
-        request.resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
 
       allow read: if request.auth != null &&
-        request.auth.uid == resource.data.userId;
+        (request.auth.uid == resource.data.userId || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin");
 
       allow update, delete: if false;
     }
@@ -83,9 +78,29 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin";
     }
 
-    // 👮 SUPER ADMIN ONLY COLLECTION
+    // 👮 ADMIN COLLECTION
     match /admin/{docId} {
       allow read, write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin";
+    }
+
+    // 📊 LOGS
+    match /logs/{logId} {
+      allow read, write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin";
+    }
+
+    // 📢 ANNOUNCEMENTS
+    match /announcements/{id} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin";
+    }
+
+    // ⚙️ GLOBAL SETTINGS (new)
+    match /settings/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super-admin";
     }
   }

@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../../firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
+
 import AdminCard from '../../components/admin/cards/AdminCard';
+import ApplicationsOverTime from '../../components/admin/charts/ApplicationsOverTime';
+import UserSignupsChart from '../../components/admin/charts/UserSignupsChart';
+import RecentActivityFeed from '../../pages/admin/RecentActivityFeed';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -51,29 +55,23 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold mb-2">Dashboard Overview</h1>
+      <h1 className="text-2xl font-bold mb-2">📊 Dashboard Overview</h1>
 
       {/* ====== STATS CARDS ====== */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <AdminCard title="Total Users" icon="📊" collection="users" />
+        <AdminCard title="Total Users" icon="👥" collection="users" />
         <AdminCard title="Jobs Posted" icon="💼" collection="jobs" />
         <AdminCard title="Reports" icon="🚨" collection="reports" />
       </div>
 
-      {/* ====== CHARTS PLACEHOLDER ====== */}
+      {/* ====== CHARTS ====== */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div className="bg-white rounded shadow p-4 min-h-[300px]">
-          📈 Applications Over Time (Coming Soon)
-        </div>
-        <div className="bg-white rounded shadow p-4 min-h-[300px]">
-          📊 User Signups (Coming Soon)
-        </div>
+        <ApplicationsOverTime />
+        <UserSignupsChart />
       </div>
 
-      {/* ====== ACTIVITY FEED PLACEHOLDER ====== */}
-      <div className="bg-white rounded shadow p-4 mt-6 min-h-[200px]">
-        📝 Recent Activity Feed (Coming Soon)
-      </div>
+      {/* ====== ACTIVITY FEED ====== */}
+      <RecentActivityFeed />
     </div>
   );
 };

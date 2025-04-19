@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import RoleChangeForm from '../forms/RoleChangeForm';
 
-const ActionDropdown = ({ user, onViewProfile, onBan }) => {
+const ActionDropdown = ({ user, onViewProfile, onChangeRole, onBan }) => {
   const [open, setOpen] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
 
@@ -54,15 +54,16 @@ const ActionDropdown = ({ user, onViewProfile, onBan }) => {
         </div>
       )}
 
-      {/* Modal for changing role */}
       {showRoleModal && (
         <Dialog open={showRoleModal} onClose={handleCloseModal} className="relative z-50">
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
           <div className="fixed inset-0 flex items-center justify-center p-4">
             <Dialog.Panel className="w-full max-w-md bg-white p-6 rounded shadow">
-              <Dialog.Title className="text-lg font-semibold mb-2">Change Role for {user.email}</Dialog.Title>
-              <RoleChangeForm user={user} onClose={handleCloseModal} />
+              <Dialog.Title className="text-lg font-semibold mb-2">
+                Change Role for {user.email}
+              </Dialog.Title>
+              <RoleChangeForm user={user} onClose={handleCloseModal} onUpdateRole={onChangeRole} />
             </Dialog.Panel>
           </div>
         </Dialog>

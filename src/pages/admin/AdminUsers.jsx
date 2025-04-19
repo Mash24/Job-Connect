@@ -1,6 +1,6 @@
-// File: /src/pages/admin/AdminUsers.jsx
+// ✅ File: src/pages/admin/AdminUsers.jsx
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, updateDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../../firebase/config';
 import { useNavigate } from 'react-router-dom';
 
@@ -54,6 +54,27 @@ const AdminUsers = () => {
     }
   }, [filter, users]);
 
+  const handleRoleUpdate = async (userId, newRole, email) => {
+    try {
+      const ref = doc(db, 'users', userId);
+      await updateDoc(ref, { role: newRole });
+
+      await addDoc(collection(db, 'logs'), {
+        action: 'updated',
+        type: 'role-change',
+        performedBy: auth.currentUser?.email || 'admin',
+        target: email,
+        details: `Role changed to '${newRole}'`,
+        timestamp: serverTimestamp(),
+      });
+
+      alert('✅ Role updated successfully');
+    } catch (error) {
+      console.error('Error updating role:', error);
+      alert('❌ Failed to update role');
+    }
+  };
+
   if (!isAdmin) return null;
 
   return (
@@ -69,7 +90,9 @@ const AdminUsers = () => {
                 filter === role ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'
               }`}
             >
-              {role === 'all' ? 'All Users' : <RoleBadge role={role} />}
+              {role === 'all'
+                ? 'All Users'
+                : role.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </button>
           ))}
         </div>
@@ -78,7 +101,7 @@ const AdminUsers = () => {
       {loading ? (
         <p className="text-gray-500">Loading users...</p>
       ) : (
-        <UserTable users={filtered} />
+        <UserTable users={filtered} onUpdateRole={handleRoleUpdate} />
       )}
     </div>
   );

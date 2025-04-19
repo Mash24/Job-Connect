@@ -1,21 +1,15 @@
+// File: src/components/admin/tables/UserTable.jsx
 import React from 'react';
 import RoleBadge from '../shared/RoleBadge';
 import ActionDropdown from '../shared/ActionDropdown';
 
-const UserTable = ({ users }) => {
+const UserTable = ({ users, onUpdateRole }) => {
   const handleViewProfile = (user) => {
     alert(`View profile for ${user.firstname} ${user.lastname}`);
-    // 🔁 In future: open a profile modal or navigate
-  };
-
-  const handleChangeRole = (user) => {
-    alert(`Change role for ${user.firstname}`);
-    // 🔁 In future: open a RoleChangeForm modal
   };
 
   const handleBan = (user) => {
     alert(`Ban user ${user.email}`);
-    // 🔁 In future: call Firestore update or disable logic
   };
 
   return (
@@ -41,7 +35,7 @@ const UserTable = ({ users }) => {
                 <ActionDropdown
                   user={user}
                   onViewProfile={handleViewProfile}
-                  onChangeRole={handleChangeRole}
+                  onChangeRole={onUpdateRole}
                   onBan={handleBan}
                 />
               </td>
