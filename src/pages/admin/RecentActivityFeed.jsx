@@ -1,10 +1,24 @@
-// File: /src/components/admin/dashboard/RecentActivityFeed.jsx
+/**
+ * @fileoverview RecentActivityFeed Component
+ * @description A real-time activity feed component that displays recent system activities
+ * in the admin dashboard. It shows various types of activities with their respective
+ * timestamps and icons.
+ * 
+ * @component
+ * @requires React
+ * @requires firebase/firestore
+ * @requires lucide-react
+ */
 
 import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { Loader2 } from 'lucide-react';
 
+/**
+ * @constant {Object} typeIcons
+ * @description Mapping of activity types to their corresponding emoji icons
+ */
 const typeIcons = {
   user: '🧑',
   job: '💼',
@@ -14,6 +28,12 @@ const typeIcons = {
   auth: '🔐',
 };
 
+/**
+ * @function formatTimeAgo
+ * @description Formats a timestamp into a human-readable relative time string
+ * @param {Object} timestamp - Firestore timestamp object
+ * @returns {string} Formatted time string (e.g., "2m ago", "1h ago")
+ */
 const formatTimeAgo = (timestamp) => {
   if (!timestamp?.seconds) return 'Just now';
   const secondsAgo = Math.floor((Date.now() - timestamp.seconds * 1000) / 1000);
@@ -23,11 +43,20 @@ const formatTimeAgo = (timestamp) => {
   return `${Math.floor(secondsAgo / 86400)}d ago`;
 };
 
+/**
+ * @component RecentActivityFeed
+ * @description Displays a real-time feed of recent system activities
+ * @returns {JSX.Element} Rendered component
+ */
 const RecentActivityFeed = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    /**
+     * @description Sets up real-time listener for activity logs
+     * @returns {Function} Cleanup function to unsubscribe from Firestore
+     */
     const q = query(
       collection(db, 'logs'),
       orderBy('timestamp', 'desc'),
