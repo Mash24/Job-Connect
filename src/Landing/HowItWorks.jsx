@@ -1,6 +1,6 @@
 import React from 'react'
 import { FaUserPlus, FaRobot, FaPaperPlane, FaBuilding, FaBullhorn, FaHandshake, FaClipboard, FaBriefcase, FaUserTie, FaRegFileAlt, FaUsersCog, FaChartLine, FaSearch } from 'react-icons/fa';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import TITLE from '../components/common/Title';
 
 const steps = {

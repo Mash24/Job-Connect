@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaCity, FaGlobeAmericas, FaLocationArrow, FaMapMarkedAlt, FaMapPin } from 'react-icons/fa';
-import { address } from 'framer-motion/client';
 import countryList from 'react-select-country-list';
 
 const LocationInputStep = ( {onSave}) => {
