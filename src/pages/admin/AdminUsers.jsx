@@ -4,6 +4,7 @@ import { collection, getDocs, query, updateDoc, doc, addDoc, serverTimestamp } f
 import { db, auth } from '../../firebase/config';
 import { useNavigate } from 'react-router-dom';
 
+import AdminUsersAdvanced from '../../components/admin/users/AdminUsersAdvanced';
 import UserTable from '../../components/admin/tables/UserTable';
 import RoleBadge from '../../components/admin/shared/RoleBadge';
 
@@ -13,6 +14,7 @@ const AdminUsers = () => {
   const [filtered, setFiltered] = useState([]);
   const [filter, setFilter] = useState('all');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [useAdvancedView, setUseAdvancedView] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,24 +79,38 @@ const AdminUsers = () => {
 
   if (!isAdmin) return null;
 
+  // Use the new advanced view by default
+  if (useAdvancedView) {
+    return <AdminUsersAdvanced />;
+  }
+
+  // Fallback to the original simple view
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">👥 Manage Users</h2>
-        <div className="space-x-2">
-          {['all', 'job-seeker', 'employer', 'super-admin'].map(role => (
-            <button
-              key={role}
-              onClick={() => setFilter(role)}
-              className={`px-3 py-1 rounded text-sm border ${
-                filter === role ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'
-              }`}
-            >
-              {role === 'all'
-                ? 'All Users'
-                : role.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </button>
-          ))}
+        <div className="flex items-center gap-4">
+          <div className="space-x-2">
+            {['all', 'job-seeker', 'employer', 'super-admin'].map(role => (
+              <button
+                key={role}
+                onClick={() => setFilter(role)}
+                className={`px-3 py-1 rounded text-sm border ${
+                  filter === role ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'
+                }`}
+              >
+                {role === 'all'
+                  ? 'All Users'
+                  : role.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setUseAdvancedView(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Switch to Advanced View
+          </button>
         </div>
       </div>
 

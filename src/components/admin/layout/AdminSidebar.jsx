@@ -7,6 +7,7 @@ const AdminSidebar = () => {
     { label: 'Users', path: '/admin/users' },
     { label: 'Jobs', path: '/admin/jobs' },
     { label: 'Reports', path: '/admin/reports' },
+    { label: 'Analytics', path: '/admin/analytics' },
     { label: 'Logs', path: '/admin/logs' },
     { label: 'Announcements', path: '/admin/announcements' },
     { label: 'Settings', path: '/admin/settings' },

@@ -6,6 +6,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminUsers from '../pages/admin/AdminUsers';
 import AdminJobs from '../pages/admin/AdminJobs';
 import AdminReports from '../pages/admin/AdminReports';
+import AdminAnalytics from '../pages/admin/AdminAnalytics';
 import AdminLogs from '../pages/admin/AdminLogs';
 import AdminSettings from '../pages/admin/AdminSettings';
 import AdminAnnouncements from '../pages/admin/AdminAnnouncements';
@@ -26,6 +27,7 @@ const AdminRoutes = () => (
     <Route path="users" element={<AdminUsers />} />
     <Route path="jobs" element={<AdminJobs />} />
     <Route path="reports" element={<AdminReports />} />
+    <Route path="analytics" element={<AdminAnalytics />} />
     <Route path="logs" element={<AdminLogs />} />
     <Route path="settings" element={<AdminSettings />} />
     <Route path="announcements" element={<AdminAnnouncements />} />
