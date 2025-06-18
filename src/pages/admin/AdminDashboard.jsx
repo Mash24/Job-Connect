@@ -6,8 +6,10 @@ import { doc, getDoc } from 'firebase/firestore';
 
 import AdminCard from '../../components/admin/cards/AdminCard';
 import ApplicationsOverTime from '../../components/admin/charts/ApplicationsOverTime';
-import UserSignupsChart from '../../components/admin/charts/UserSignupsChart';
+import UserSignupsOverTime from '../../components/admin/charts/UserSignupsOverTime';
+import JobStatusBreakdown from '../../components/admin/charts/JobStatusBreakdown';
 import RecentActivityFeed from '../../pages/admin/RecentActivityFeed';
+import AdminDashboardTopSection from '../../components/admin/dashboard/AdminDashboardTopSection';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -57,17 +59,14 @@ const AdminDashboard = () => {
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold mb-2">📊 Dashboard Overview</h1>
 
-      {/* ====== STATS CARDS ====== */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <AdminCard title="Total Users" icon="👥" collection="users" />
-        <AdminCard title="Jobs Posted" icon="💼" collection="jobs" />
-        <AdminCard title="Reports" icon="🚨" collection="reports" />
-      </div>
+      {/* ====== NEW TOP SECTION ====== */}
+      <AdminDashboardTopSection />
 
       {/* ====== CHARTS ====== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
         <ApplicationsOverTime />
-        <UserSignupsChart />
+        <UserSignupsOverTime />
+        <JobStatusBreakdown />
       </div>
 
       {/* ====== ACTIVITY FEED ====== */}

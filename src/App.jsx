@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 import Navbar from './components/layouts/Navbar';
 
@@ -61,51 +62,53 @@ function App() {
   );
 
   return (
-    <>
-    {/* Global Maintenance Overlay */}
-    <MaintenanceOverlay />
-    
-      {!hideNavbar && <Navbar />}
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        {/* Global Maintenance Overlay */}
+        <MaintenanceOverlay />
+        
+        {!hideNavbar && <Navbar />}
 
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/select-role" element={<RoleSelection />} />
-        <Route path="/setup-seeker" element={<SetupSeeker />} />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/select-role" element={<RoleSelection />} />
+          <Route path="/setup-seeker" element={<SetupSeeker />} />
 
-        {/* Role-Based Redirect */}
-        <Route path="/dashboard" element={<RoleBasedRoute />} />
-        {/* <Route path="/admin/fix-reports" element={<FixOldReports />} /> */}
+          {/* Role-Based Redirect */}
+          <Route path="/dashboard" element={<RoleBasedRoute />} />
+          {/* <Route path="/admin/fix-reports" element={<FixOldReports />} /> */}
 
-        {/* Seeker Dashboard */}
-        <Route path="/dashboard-seeker" element={<DashboardSeeker />}>
-          <Route index element={<Overview />} />
-          <Route path="my-applications" element={<MyApplication />} />
-          <Route path="support" element={<Support />} />
-        </Route>
+          {/* Seeker Dashboard */}
+          <Route path="/dashboard-seeker" element={<DashboardSeeker />}>
+            <Route index element={<Overview />} />
+            <Route path="my-applications" element={<MyApplication />} />
+            <Route path="support" element={<Support />} />
+          </Route>
 
-        {/* Employer Setup */}
-        <Route path="/setup-employer" element={<SetupEmployer />} />
+          {/* Employer Setup */}
+          <Route path="/setup-employer" element={<SetupEmployer />} />
 
-        {/* Employer Dashboard */}
-        <Route path="/dashboard-employer/*" element={<DashboardEmployerLayout />}>
-          <Route index element={<OverviewEmployer />} />
-          <Route path="jobs" element={<JobListing />} />
-          <Route path="post-job" element={<PostJobForm />} />
-          <Route path="manage-jobs" element={<ManageJobs />} />
-          <Route path="edit-job/:jobId" element={<EditJobModal />} />
-          <Route path="messages" element={<Messages />} />
-          <Route path="support" element={<Support />} />
-        </Route>
+          {/* Employer Dashboard */}
+          <Route path="/dashboard-employer/*" element={<DashboardEmployerLayout />}>
+            <Route index element={<OverviewEmployer />} />
+            <Route path="jobs" element={<JobListing />} />
+            <Route path="post-job" element={<PostJobForm />} />
+            <Route path="manage-jobs" element={<ManageJobs />} />
+            <Route path="edit-job/:jobId" element={<EditJobModal />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="support" element={<Support />} />
+          </Route>
 
-        {/* ✅ Admin Routes */}
-        {AdminRoutes()}
-      </Routes>
-    </>
+          {/* ✅ Admin Routes */}
+          {AdminRoutes()}
+        </Routes>
+      </div>
+    </ThemeProvider>
   );
 }
 

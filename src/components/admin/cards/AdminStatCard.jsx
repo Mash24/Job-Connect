@@ -21,4 +21,4 @@ const AdminStatCard = ({ title, value, icon, color = 'from-blue-500 to-indigo-50
   );
 };
 
-export default AdminStatCard;
+export default AdminStatCard; 

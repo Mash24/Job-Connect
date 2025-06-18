@@ -1,34 +1,32 @@
-// File: /src/components/admin/charts/ApplicationsOverTime.jsx
-
 import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { motion } from 'framer-motion';
 import { groupByDate, filterByPeriod } from '../../../lib/utils';
 import ChartCard from './ChartCard';
 
 /**
- * @fileoverview ApplicationsOverTime
- * @description Real-time animated line chart of job applications per day.
+ * @fileoverview UserSignupsOverTime
+ * @description Real-time animated area chart showing user signup growth over time.
  * @component
  * @returns {JSX.Element}
  */
-const ApplicationsOverTime = () => {
+const UserSignupsOverTime = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('30d');
 
   useEffect(() => {
     // Listen to real-time updates from Firestore
-    const q = query(collection(db, 'applications'), orderBy('createdAt', 'asc'));
+    const q = query(collection(db, 'users'), orderBy('createdAt', 'asc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map(doc => doc.data());
       const grouped = groupByDate(docs, 'createdAt');
       setData(grouped);
       setLoading(false);
     }, (error) => {
-      console.error('Error fetching applications:', error);
+      console.error('Error fetching users:', error);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -38,8 +36,8 @@ const ApplicationsOverTime = () => {
 
   return (
     <ChartCard
-      title="Applications Over Time"
-      icon="📈"
+      title="User Signups Over Time"
+      icon="👥"
       data={data}
       period={period}
       onPeriodChange={setPeriod}
@@ -51,11 +49,17 @@ const ApplicationsOverTime = () => {
       ) : filteredData.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-8">
           <img src="/images/ai.png" alt="No data" className="w-32 h-32 opacity-60 mb-2" />
-          <p className="text-sm text-gray-400 italic">No application data yet. Encourage your users to apply!</p>
+          <p className="text-sm text-gray-400 italic">No signup data yet. Start promoting your platform!</p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={filteredData} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
+          <AreaChart data={filteredData} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
+            <defs>
+              <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
@@ -71,22 +75,22 @@ const ApplicationsOverTime = () => {
                 const date = new Date(d);
                 return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
               }}
-              formatter={value => [`${value} applications`, 'Applications']}
+              formatter={value => [`${value} signups`, 'Signups']}
             />
-            <Line
+            <Area
               type="monotone"
               dataKey="count"
-              stroke="#3b82f6"
+              stroke="#10b981"
               strokeWidth={3}
-              dot={{ r: 4, stroke: '#3b82f6', strokeWidth: 2, fill: '#fff' }}
-              activeDot={{ r: 7 }}
+              fillOpacity={1}
+              fill="url(#colorUsers)"
               isAnimationActive={true}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       )}
     </ChartCard>
   );
 };
 
-export default ApplicationsOverTime;
+export default UserSignupsOverTime; 

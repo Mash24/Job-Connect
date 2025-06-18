@@ -1,11 +1,12 @@
 import React from 'react';
-import { Bell, LogOut, Settings, User } from 'lucide-react';
+import { Bell, LogOut, Settings, User, Search } from 'lucide-react';
 import UserAvatar from '../common/UserAvatar';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { useNavigate } from 'react-router-dom';
+// import ThemeToggle from '../common/ThemeToggle';
 
 const TopBar = () => {
   const navigate = useNavigate();
@@ -22,12 +23,9 @@ const TopBar = () => {
 
       {/* Right Side - Actions */}
       <div className="flex items-center gap-4">
-        {/* Notifications */}
-        <button className="relative text-gray-500 hover:text-gray-700">
-          <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
-            3
-          </span>
+        {/* <ThemeToggle /> */}
+        <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         </button>
 
         {/* Avatar with Dropdown Menu */}

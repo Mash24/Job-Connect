@@ -15,7 +15,7 @@ import FAQ from '../Landing/FAQ';
 import SearchBar from '../components/common/SearchBar';
 import FeaturedJobs from '../components/home/FeaturedJobs';
 import CompanyLogos from '../components/home/CompanyLogos';
-import SuccessStories from '../components/home/SuccessStories';
+// import SuccessStories from '../components/home/SuccessStories';
 import JobCategories from '../components/home/JobCategories';
 import SalaryCalculator from '../components/home/SalaryCalculator';
 import SkillsAssessment from '../components/home/SkillsAssessment';
@@ -87,7 +87,7 @@ const Home = () => {
         <CompanyLogos />
         <Features />
         <HowItWorks />
-        <SuccessStories />
+        {/* <SuccessStories /> */}
         <Testimonials />
         <SalaryCalculator />
         <SkillsAssessment />
