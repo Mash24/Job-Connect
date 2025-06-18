@@ -34,7 +34,7 @@ const GreetingBanner = () => {
     <div className="flex items-center justify-between bg-white rounded-xl shadow p-6 mb-2">
       <div>
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <span role="img" aria-label="wave">👋</span> {greeting}, {adminName}!
+          {greeting}, {adminName}!
         </h2>
         <p className="text-gray-500 mt-1">Here's a quick overview of today's activity.</p>
       </div>

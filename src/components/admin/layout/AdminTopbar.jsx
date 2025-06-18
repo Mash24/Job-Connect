@@ -15,7 +15,7 @@ const AdminTopbar = () => {
 
   return (
     <div className="w-full bg-white px-6 py-4 border-b flex items-center justify-between">
-      <h1 className="text-xl font-bold">👋 Welcome, Admin</h1>
+      <h1 className="text-xl font-bold">Welcome, Admin</h1>
 
       <div className="relative">
         <button

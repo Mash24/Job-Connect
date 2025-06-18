@@ -1,7 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ErrorBoundary } from 'react-error-boundary';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Search, TrendingUp, Users, Briefcase, 
+  MapPin, DollarSign, Star, ArrowRight,
+  Play, Pause, Volume2, VolumeX
+} from 'lucide-react';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 // Components
@@ -15,7 +21,6 @@ import FAQ from '../Landing/FAQ';
 import SearchBar from '../components/common/SearchBar';
 import FeaturedJobs from '../components/home/FeaturedJobs';
 import CompanyLogos from '../components/home/CompanyLogos';
-// import SuccessStories from '../components/home/SuccessStories';
 import JobCategories from '../components/home/JobCategories';
 import SalaryCalculator from '../components/home/SalaryCalculator';
 import SkillsAssessment from '../components/home/SkillsAssessment';
@@ -26,19 +31,168 @@ import performanceMonitor from '../services/performance';
 
 // Error fallback component
 const ErrorFallback = ({ error, resetErrorBoundary }) => (
-  <div role="alert" className="p-4 bg-red-50 text-red-700 rounded-lg">
-    <h2 className="text-lg font-semibold">Something went wrong:</h2>
-    <pre className="mt-2 text-sm">{error.message}</pre>
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    role="alert" 
+    className="p-6 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl shadow-lg"
+  >
+    <h2 className="text-lg font-semibold text-red-800 mb-2">Something went wrong:</h2>
+    <pre className="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded">{error.message}</pre>
     <button
       onClick={resetErrorBoundary}
-      className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+      className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
     >
       Try again
     </button>
-  </div>
+  </motion.div>
 );
 
+/**
+ * @component LiveStats
+ * @description Animated live statistics component
+ */
+const LiveStats = () => {
+  const [stats, setStats] = useState({
+    jobs: 0,
+    companies: 0,
+    users: 0,
+    successRate: 0
+  });
+
+  useEffect(() => {
+    // Simulate live stats
+    const interval = setInterval(() => {
+      setStats(prev => ({
+        jobs: prev.jobs + Math.floor(Math.random() * 5),
+        companies: prev.companies + Math.floor(Math.random() * 2),
+        users: prev.users + Math.floor(Math.random() * 10),
+        successRate: Math.min(98, prev.successRate + Math.random() * 0.5)
+      }));
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20"
+    >
+      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <TrendingUp className="w-5 h-5" />
+        Live Platform Stats
+      </h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <motion.div 
+          className="text-center"
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className="text-2xl font-bold text-white">{stats.jobs.toLocaleString()}</div>
+          <div className="text-sm text-white/80">Active Jobs</div>
+        </motion.div>
+        <motion.div 
+          className="text-center"
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className="text-2xl font-bold text-white">{stats.companies.toLocaleString()}</div>
+          <div className="text-sm text-white/80">Companies</div>
+        </motion.div>
+        <motion.div 
+          className="text-center"
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className="text-2xl font-bold text-white">{stats.users.toLocaleString()}</div>
+          <div className="text-sm text-white/80">Users</div>
+        </motion.div>
+        <motion.div 
+          className="text-center"
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className="text-2xl font-bold text-white">{stats.successRate.toFixed(1)}%</div>
+          <div className="text-sm text-white/80">Success Rate</div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+/**
+ * @component QuickActions
+ * @description Quick action buttons for common tasks
+ */
+const QuickActions = () => {
+  const actions = [
+    { icon: Search, label: 'Search Jobs', color: 'bg-blue-500 hover:bg-blue-600' },
+    { icon: Briefcase, label: 'Post Job', color: 'bg-green-500 hover:bg-green-600' },
+    { icon: Users, label: 'Find Talent', color: 'bg-purple-500 hover:bg-purple-600' },
+    { icon: Star, label: 'Featured', color: 'bg-yellow-500 hover:bg-yellow-600' }
+  ];
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+      className="flex flex-wrap gap-3 justify-center"
+    >
+      {actions.map((action, index) => (
+        <motion.button
+          key={action.label}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 + index * 0.1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium transition-all ${action.color}`}
+        >
+          <action.icon className="w-4 h-4" />
+          {action.label}
+        </motion.button>
+      ))}
+    </motion.div>
+  );
+};
+
+/**
+ * @component FloatingActionButton
+ * @description Floating action button for quick access
+ */
+const FloatingActionButton = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsVisible(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50 flex items-center justify-center"
+        >
+          <ArrowRight className="w-5 h-5 rotate-[-90deg]" />
+        </motion.button>
+      )}
+    </AnimatePresence>
+  );
+};
+
 const Home = () => {
+  const [isMuted, setIsMuted] = useState(false);
+
   useEffect(() => {
     // Track page view
     trackPageView('Home');
@@ -79,23 +233,180 @@ const Home = () => {
         <meta name="twitter:description" content="Find your dream job with AI-powered matching and real-time alerts. Connect with top employers and accelerate your career." />
       </Helmet>
 
-      <main>
-        <Hero />
-        <SearchBar />
-        <JobCategories />
-        <FeaturedJobs />
-        <CompanyLogos />
-        <Features />
-        <HowItWorks />
-        {/* <SuccessStories /> */}
-        <Testimonials />
-        <SalaryCalculator />
-        <SkillsAssessment />
-        <FAQ />
-        <FinalCTA />
+      <main className="relative">
+        {/* Hero Section */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Hero />
+        </motion.section>
+
+        {/* Enhanced Search Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="relative z-10 -mt-8"
+        >
+          <div className="max-w-4xl mx-auto px-4">
+            <SearchBar />
+          </div>
+        </motion.section>
+
+        {/* Quick Actions */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="py-8 bg-gradient-to-r from-blue-50 to-purple-50"
+        >
+          <div className="max-w-6xl mx-auto px-4">
+            <QuickActions />
+          </div>
+        </motion.section>
+
+        {/* Live Stats */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+          className="py-8 bg-gradient-to-r from-blue-600 to-purple-600"
+        >
+          <div className="max-w-6xl mx-auto px-4">
+            <LiveStats />
+          </div>
+        </motion.section>
+
+        {/* Job Categories */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16"
+        >
+          <JobCategories />
+        </motion.section>
+
+        {/* Featured Jobs */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16 bg-gray-50"
+        >
+          <FeaturedJobs />
+        </motion.section>
+
+        {/* Company Logos */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16"
+        >
+          <CompanyLogos />
+        </motion.section>
+
+        {/* Features */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16 bg-gradient-to-r from-blue-50 to-purple-50"
+        >
+          <Features />
+        </motion.section>
+
+        {/* How It Works */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16"
+        >
+          <HowItWorks />
+        </motion.section>
+
+        {/* Testimonials */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16 bg-gray-50"
+        >
+          <Testimonials />
+        </motion.section>
+
+        {/* Salary Calculator */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16"
+        >
+          <SalaryCalculator />
+        </motion.section>
+
+        {/* Skills Assessment */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16 bg-gradient-to-r from-green-50 to-blue-50"
+        >
+          <SkillsAssessment />
+        </motion.section>
+
+        {/* FAQ */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16"
+        >
+          <FAQ />
+        </motion.section>
+
+        {/* Final CTA */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="py-16 bg-gradient-to-r from-blue-600 to-purple-600"
+        >
+          <FinalCTA />
+        </motion.section>
       </main>
 
       <Footer />
+
+      {/* Floating Action Button */}
+      <FloatingActionButton />
+
+      {/* Audio Control (for background music if added) */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setIsMuted(!isMuted)}
+        className="fixed top-6 right-6 w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full shadow-lg hover:bg-white/30 transition-colors z-50 flex items-center justify-center"
+      >
+        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+      </motion.button>
     </ErrorBoundary>
   );
 };

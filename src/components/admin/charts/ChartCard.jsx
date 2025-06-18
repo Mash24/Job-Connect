@@ -84,7 +84,6 @@ const ChartCard = ({
               />
             </button>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-              <span role="img" aria-label={title.toLowerCase()}>{icon}</span>
               {title}
             </h3>
           </div>

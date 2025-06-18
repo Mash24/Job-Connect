@@ -1,5 +1,3 @@
-// File: /src/components/admin/charts/ApplicationsOverTime.jsx
-
 import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
@@ -39,7 +37,6 @@ const ApplicationsOverTime = () => {
   return (
     <ChartCard
       title="Applications Over Time"
-      icon="📈"
       data={data}
       period={period}
       onPeriodChange={setPeriod}
@@ -89,4 +86,4 @@ const ApplicationsOverTime = () => {
   );
 };
 
-export default ApplicationsOverTime;
+export default ApplicationsOverTime; 
