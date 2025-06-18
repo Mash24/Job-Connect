@@ -80,3 +80,297 @@
   }
   
 }
+
+/* Admin Panel Modern Design System */
+@layer components {
+  /* Modern Card Styles */
+  .admin-card {
+    @apply bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-xl;
+  }
+
+  .admin-card-header {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6;
+  }
+
+  .admin-card-body {
+    @apply p-6;
+  }
+
+  .admin-card-footer {
+    @apply bg-gray-50 px-6 py-3 border-t border-gray-200;
+  }
+
+  /* Modern Button Styles */
+  .admin-btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .admin-btn-secondary {
+    @apply bg-gradient-to-r from-gray-600 to-gray-700 text-white px-4 py-2 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .admin-btn-success {
+    @apply bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .admin-btn-danger {
+    @apply bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .admin-btn-warning {
+    @apply bg-gradient-to-r from-yellow-600 to-yellow-700 text-white px-4 py-2 rounded-lg hover:from-yellow-700 hover:to-yellow-800 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  /* Modern Input Styles */
+  .admin-input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200;
+  }
+
+  .admin-input-search {
+    @apply w-full pl-10 pr-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white/50;
+  }
+
+  /* Modern Badge Styles */
+  .admin-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .admin-badge-primary {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .admin-badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .admin-badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .admin-badge-danger {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .admin-badge-info {
+    @apply bg-cyan-100 text-cyan-800;
+  }
+
+  /* Modern Table Styles */
+  .admin-table {
+    @apply min-w-full divide-y divide-gray-200;
+  }
+
+  .admin-table-header {
+    @apply bg-gradient-to-r from-gray-50 to-gray-100;
+  }
+
+  .admin-table-row {
+    @apply hover:bg-gray-50 transition-colors duration-150;
+  }
+
+  /* Modern Stats Card Styles */
+  .admin-stats-card {
+    @apply bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-200;
+  }
+
+  .admin-stats-card-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .admin-stats-card-icon {
+    @apply p-3 rounded-xl;
+  }
+
+  .admin-stats-card-value {
+    @apply text-3xl font-bold text-gray-900;
+  }
+
+  .admin-stats-card-label {
+    @apply text-sm font-medium text-gray-600;
+  }
+
+  /* Modern Alert Styles */
+  .admin-alert {
+    @apply p-4 rounded-xl border-l-4;
+  }
+
+  .admin-alert-success {
+    @apply bg-green-50 border-green-500 text-green-800;
+  }
+
+  .admin-alert-warning {
+    @apply bg-yellow-50 border-yellow-500 text-yellow-800;
+  }
+
+  .admin-alert-danger {
+    @apply bg-red-50 border-red-500 text-red-800;
+  }
+
+  .admin-alert-info {
+    @apply bg-blue-50 border-blue-500 text-blue-800;
+  }
+
+  /* Modern Loading States */
+  .admin-loading {
+    @apply flex justify-center items-center py-12;
+  }
+
+  .admin-loading-spinner {
+    @apply w-8 h-8 animate-spin text-blue-600;
+  }
+
+  /* Modern Empty States */
+  .admin-empty-state {
+    @apply text-center py-12;
+  }
+
+  .admin-empty-state-icon {
+    @apply w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4;
+  }
+
+  .admin-empty-state-title {
+    @apply text-gray-600 font-medium;
+  }
+
+  .admin-empty-state-description {
+    @apply text-gray-400 text-sm mt-1;
+  }
+
+  /* Modern Filter Styles */
+  .admin-filter-button {
+    @apply flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all;
+  }
+
+  .admin-filter-button-active {
+    @apply bg-blue-600 text-white shadow-md;
+  }
+
+  .admin-filter-button-inactive {
+    @apply bg-white text-gray-600 hover:bg-gray-100 border border-gray-200;
+  }
+
+  /* Modern Sidebar Styles */
+  .admin-sidebar {
+    @apply bg-white border-r border-gray-200 shadow-lg;
+  }
+
+  .admin-sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200;
+  }
+
+  .admin-sidebar-item-active {
+    @apply bg-blue-50 text-blue-700 border-r-2 border-blue-600;
+  }
+
+  /* Modern Topbar Styles */
+  .admin-topbar {
+    @apply bg-white border-b border-gray-200 shadow-sm;
+  }
+
+  /* Modern Modal Styles */
+  .admin-modal {
+    @apply bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden;
+  }
+
+  .admin-modal-header {
+    @apply bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200;
+  }
+
+  .admin-modal-body {
+    @apply p-6;
+  }
+
+  .admin-modal-footer {
+    @apply bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end gap-3;
+  }
+
+  /* Modern Chart Container Styles */
+  .admin-chart-container {
+    @apply bg-white rounded-xl shadow-lg border border-gray-200 p-6;
+  }
+
+  /* Modern Form Styles */
+  .admin-form-group {
+    @apply mb-6;
+  }
+
+  .admin-form-label {
+    @apply block text-sm font-medium text-gray-700 mb-2;
+  }
+
+  .admin-form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200;
+  }
+
+  .admin-form-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-vertical;
+  }
+
+  .admin-form-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200;
+  }
+
+  /* Modern Navigation Styles */
+  .admin-nav-tabs {
+    @apply flex space-x-1 bg-gray-100 p-1 rounded-lg;
+  }
+
+  .admin-nav-tab {
+    @apply px-3 py-2 text-sm font-medium rounded-md transition-all duration-200;
+  }
+
+  .admin-nav-tab-active {
+    @apply bg-white text-blue-600 shadow-sm;
+  }
+
+  .admin-nav-tab-inactive {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-white/50;
+  }
+
+  /* Modern Progress Styles */
+  .admin-progress {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+
+  .admin-progress-bar {
+    @apply h-2 rounded-full transition-all duration-300;
+  }
+
+  .admin-progress-bar-blue {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600;
+  }
+
+  .admin-progress-bar-green {
+    @apply bg-gradient-to-r from-green-500 to-green-600;
+  }
+
+  .admin-progress-bar-yellow {
+    @apply bg-gradient-to-r from-yellow-500 to-yellow-600;
+  }
+
+  .admin-progress-bar-red {
+    @apply bg-gradient-to-r from-red-500 to-red-600;
+  }
+
+  /* Modern Responsive Utilities */
+  .admin-responsive-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .admin-responsive-flex {
+    @apply flex flex-col md:flex-row gap-4;
+  }
+
+  /* Modern Animation Classes */
+  .admin-fade-in {
+    @apply animate-in fade-in duration-300;
+  }
+
+  .admin-slide-in {
+    @apply animate-in slide-in-from-bottom-4 duration-300;
+  }
+
+  .admin-scale-in {
+    @apply animate-in zoom-in-95 duration-300;
+  }
+}

@@ -7,12 +7,49 @@ import {
   Briefcase, Filter, Search, Download, Plus, 
   TrendingUp, MapPin, DollarSign, Calendar, 
   CheckCircle, XCircle, Clock, Eye, Edit, Trash2,
-  BarChart3, Users, Target, AlertTriangle
+  BarChart3, Users, Target, AlertTriangle, Hash,
+  Copy, ExternalLink, Tag, Building, UserCheck
 } from 'lucide-react';
 import { auth, db } from '../../firebase/config';
-import { collection, getDocs, query, where, orderBy, limit, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 
 import JobTable from '../../components/admin/tables/JobTable';
+
+/**
+ * @function generateJobId
+ * @description Generates a unique job identifier with prefix and timestamp
+ * @param {string} company - Company name for prefix
+ * @param {string} title - Job title for prefix
+ * @returns {string} Unique job ID (e.g., "JOB-ABC-2024-001")
+ */
+const generateJobId = (company, title) => {
+  const prefix = company?.substring(0, 3).toUpperCase() || 'JOB';
+  const year = new Date().getFullYear();
+  const timestamp = Date.now().toString().slice(-3);
+  return `${prefix}-${year}-${timestamp}`;
+};
+
+/**
+ * @function formatJobId
+ * @description Formats job ID for display with copy functionality
+ * @param {string} jobId - The job ID to format
+ * @returns {JSX.Element} Formatted job ID with copy button
+ */
+const JobIdDisplay = ({ jobId, onCopy }) => (
+  <div className="flex items-center gap-2">
+    <Hash className="w-4 h-4 text-blue-600" />
+    <span className="font-mono text-sm bg-blue-50 text-blue-700 px-2 py-1 rounded">
+      {jobId}
+    </span>
+    <button
+      onClick={() => onCopy(jobId)}
+      className="p-1 hover:bg-blue-100 rounded transition-colors"
+      title="Copy Job ID"
+    >
+      <Copy className="w-3 h-3 text-blue-600" />
+    </button>
+  </div>
+);
 
 const AdminJobs = () => {
   const navigate = useNavigate();
@@ -26,7 +63,10 @@ const AdminJobs = () => {
     location: 'all',
     salary: 'all',
     dateRange: 'all',
-    search: ''
+    search: '',
+    jobId: '',
+    employer: 'all',
+    priority: 'all'
   });
   const [jobStats, setJobStats] = useState({
     total: 0,
@@ -34,10 +74,14 @@ const AdminJobs = () => {
     pending: 0,
     expired: 0,
     applications: 0,
-    avgSalary: 0
+    avgSalary: 0,
+    uniqueEmployers: 0,
+    highPriority: 0
   });
   const [selectedJobs, setSelectedJobs] = useState(new Set());
   const [viewMode, setViewMode] = useState('table'); // table, grid, analytics
+  const [showFilters, setShowFilters] = useState(false);
+  const [copiedJobId, setCopiedJobId] = useState(null);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -76,11 +120,18 @@ const AdminJobs = () => {
       setLoading(true);
       const q = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'));
       const snap = await getDocs(q);
-      const jobList = snap.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date()
-      }));
+      const jobList = snap.docs.map(doc => {
+        const data = doc.data();
+        return { 
+          id: doc.id, 
+          ...data,
+          jobId: data.jobId || generateJobId(data.company, data.title),
+          createdAt: data.createdAt?.toDate() || new Date(),
+          priority: data.priority || 'normal',
+          applications: data.applications || 0,
+          views: data.views || 0
+        };
+      });
       
       setJobs(jobList);
       calculateJobStats(jobList);
@@ -92,6 +143,7 @@ const AdminJobs = () => {
   };
 
   const calculateJobStats = (jobList) => {
+    const uniqueEmployers = new Set(jobList.map(job => job.employerId || job.company)).size;
     const stats = {
       total: jobList.length,
       active: jobList.filter(job => job.status === 'active').length,
@@ -100,7 +152,9 @@ const AdminJobs = () => {
       applications: jobList.reduce((sum, job) => sum + (job.applications || 0), 0),
       avgSalary: jobList.length > 0 
         ? jobList.reduce((sum, job) => sum + (job.salary || 0), 0) / jobList.length 
-        : 0
+        : 0,
+      uniqueEmployers,
+      highPriority: jobList.filter(job => job.priority === 'high').length
     };
     setJobStats(stats);
   };
@@ -144,14 +198,36 @@ const AdminJobs = () => {
       });
     }
 
-    // Search filter
+    // Job ID filter
+    if (filters.jobId) {
+      const jobIdTerm = filters.jobId.toLowerCase();
+      filtered = filtered.filter(job => 
+        job.jobId?.toLowerCase().includes(jobIdTerm)
+      );
+    }
+
+    // Employer filter
+    if (filters.employer !== 'all') {
+      filtered = filtered.filter(job => 
+        job.employerId === filters.employer || job.company === filters.employer
+      );
+    }
+
+    // Priority filter
+    if (filters.priority !== 'all') {
+      filtered = filtered.filter(job => job.priority === filters.priority);
+    }
+
+    // Search filter (enhanced)
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(job => 
         job.title?.toLowerCase().includes(searchTerm) ||
         job.company?.toLowerCase().includes(searchTerm) ||
         job.location?.toLowerCase().includes(searchTerm) ||
-        job.description?.toLowerCase().includes(searchTerm)
+        job.description?.toLowerCase().includes(searchTerm) ||
+        job.jobId?.toLowerCase().includes(searchTerm) ||
+        job.employerId?.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -160,6 +236,16 @@ const AdminJobs = () => {
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const copyJobId = async (jobId) => {
+    try {
+      await navigator.clipboard.writeText(jobId);
+      setCopiedJobId(jobId);
+      setTimeout(() => setCopiedJobId(null), 2000);
+    } catch (error) {
+      console.error('Failed to copy job ID:', error);
+    }
   };
 
   const handleBulkAction = async (action) => {
@@ -174,13 +260,27 @@ const AdminJobs = () => {
         const jobRef = doc(db, 'jobs', jobId);
         switch (action) {
           case 'approve':
-            batch.push(updateDoc(jobRef, { status: 'active' }));
+            batch.push(updateDoc(jobRef, { 
+              status: 'active',
+              approvedAt: serverTimestamp(),
+              approvedBy: auth.currentUser?.email
+            }));
             break;
           case 'reject':
-            batch.push(updateDoc(jobRef, { status: 'rejected' }));
+            batch.push(updateDoc(jobRef, { 
+              status: 'rejected',
+              rejectedAt: serverTimestamp(),
+              rejectedBy: auth.currentUser?.email
+            }));
             break;
           case 'delete':
             batch.push(deleteDoc(jobRef));
+            break;
+          case 'priority-high':
+            batch.push(updateDoc(jobRef, { priority: 'high' }));
+            break;
+          case 'priority-normal':
+            batch.push(updateDoc(jobRef, { priority: 'normal' }));
             break;
         }
       });
@@ -188,6 +288,16 @@ const AdminJobs = () => {
       await Promise.all(batch);
       setSelectedJobs(new Set());
       fetchJobs(); // Refresh data
+      
+      // Log the bulk action
+      await addDoc(collection(db, 'logs'), {
+        action: `bulk-${action}`,
+        type: 'job-management',
+        performedBy: auth.currentUser?.email || 'admin',
+        target: `${selectedJobs.size} jobs`,
+        details: `Bulk ${action} performed on ${selectedJobs.size} jobs`,
+        timestamp: serverTimestamp(),
+      });
     } catch (error) {
       console.error('Error performing bulk action:', error);
       alert('Error performing bulk action');
@@ -200,48 +310,44 @@ const AdminJobs = () => {
       return;
     }
 
-    const headers = [
-      'ID', 'Title', 'Company', 'Location', 'Category', 'Salary', 
-      'Status', 'Applications', 'Created At', 'Description'
-    ];
-
-    const csvData = filteredJobs.map(job => [
-      job.id,
-      job.title || '',
-      job.company || '',
-      job.location || '',
-      job.category || '',
-      job.salary || '',
-      job.status || '',
-      job.applications || 0,
-      job.createdAt?.toISOString() || '',
-      job.description || ''
-    ]);
-
     const csvContent = [
-      headers.join(','),
-      ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
+      ['Job ID', 'Title', 'Company', 'Location', 'Salary', 'Status', 'Priority', 'Applications', 'Created Date', 'Category'],
+      ...filteredJobs.map(job => [
+        job.jobId || 'N/A',
+        job.title || 'N/A',
+        job.company || 'N/A',
+        job.location || 'N/A',
+        job.salary || 'N/A',
+        job.status || 'N/A',
+        job.priority || 'normal',
+        job.applications || 0,
+        job.createdAt?.toLocaleDateString() || 'N/A',
+        job.category || 'N/A'
+      ])
+    ].map(row => row.join(',')).join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `jobs_export_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `jobs-export-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const getCategories = () => {
-    const categories = new Set(jobs.map(job => job.category).filter(Boolean));
-    return Array.from(categories);
+    const categories = [...new Set(jobs.map(job => job.category).filter(Boolean))];
+    return categories.sort();
   };
 
   const getLocations = () => {
-    const locations = new Set(jobs.map(job => job.location).filter(Boolean));
-    return Array.from(locations);
+    const locations = [...new Set(jobs.map(job => job.location).filter(Boolean))];
+    return locations.sort();
+  };
+
+  const getEmployers = () => {
+    const employers = [...new Set(jobs.map(job => job.employerId || job.company).filter(Boolean))];
+    return employers.sort();
   };
 
   const renderStatsCards = () => (
@@ -249,16 +355,20 @@ const AdminJobs = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+        className="bg-white rounded-xl shadow-lg border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Total Jobs</p>
-            <p className="text-2xl font-bold text-gray-900">{jobStats.total}</p>
+            <p className="text-3xl font-bold text-gray-900">{jobStats.total}</p>
           </div>
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Briefcase className="w-5 h-5 text-blue-600" />
+          <div className="p-3 bg-blue-100 rounded-xl">
+            <Briefcase className="w-6 h-6 text-blue-600" />
           </div>
+        </div>
+        <div className="mt-4 flex items-center gap-4 text-sm">
+          <span className="text-green-600">Active: {jobStats.active}</span>
+          <span className="text-yellow-600">Pending: {jobStats.pending}</span>
         </div>
       </motion.div>
 
@@ -266,16 +376,19 @@ const AdminJobs = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+        className="bg-white rounded-xl shadow-lg border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Active Jobs</p>
-            <p className="text-2xl font-bold text-gray-900">{jobStats.active}</p>
+            <p className="text-sm font-medium text-gray-600">Total Applications</p>
+            <p className="text-3xl font-bold text-gray-900">{jobStats.applications}</p>
           </div>
-          <div className="p-2 bg-green-100 rounded-lg">
-            <CheckCircle className="w-5 h-5 text-green-600" />
+          <div className="p-3 bg-green-100 rounded-xl">
+            <Users className="w-6 h-6 text-green-600" />
           </div>
+        </div>
+        <div className="mt-4 text-sm text-gray-600">
+          Avg: {Math.round(jobStats.applications / Math.max(jobStats.total, 1))} per job
         </div>
       </motion.div>
 
@@ -283,16 +396,19 @@ const AdminJobs = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+        className="bg-white rounded-xl shadow-lg border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Pending Review</p>
-            <p className="text-2xl font-bold text-gray-900">{jobStats.pending}</p>
+            <p className="text-sm font-medium text-gray-600">Unique Employers</p>
+            <p className="text-3xl font-bold text-gray-900">{jobStats.uniqueEmployers}</p>
           </div>
-          <div className="p-2 bg-yellow-100 rounded-lg">
-            <Clock className="w-5 h-5 text-yellow-600" />
+          <div className="p-3 bg-purple-100 rounded-xl">
+            <Building className="w-6 h-6 text-purple-600" />
           </div>
+        </div>
+        <div className="mt-4 text-sm text-gray-600">
+          Active companies
         </div>
       </motion.div>
 
@@ -300,75 +416,88 @@ const AdminJobs = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+        className="bg-white rounded-xl shadow-lg border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Avg Salary</p>
-            <p className="text-2xl font-bold text-gray-900">${jobStats.avgSalary.toLocaleString()}</p>
+            <p className="text-sm font-medium text-gray-600">High Priority</p>
+            <p className="text-3xl font-bold text-gray-900">{jobStats.highPriority}</p>
           </div>
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <DollarSign className="w-5 h-5 text-purple-600" />
+          <div className="p-3 bg-red-100 rounded-xl">
+            <AlertTriangle className="w-6 h-6 text-red-600" />
           </div>
+        </div>
+        <div className="mt-4 text-sm text-gray-600">
+          Needs attention
         </div>
       </motion.div>
     </div>
   );
 
   const renderFilters = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-        <button
-          onClick={() => setFilters({
-            status: 'all',
-            category: 'all',
-            location: 'all',
-            salary: 'all',
-            dateRange: 'all',
-            search: ''
-          })}
-          className="text-sm text-blue-600 hover:text-blue-800"
-        >
-          Clear All
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        {/* Search */}
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: showFilters ? 'auto' : 0, opacity: showFilters ? 1 : 0 }}
+      className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6 overflow-hidden"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* Job ID Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Job ID
+          </label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              placeholder="Search jobs..."
-              className="pl-10 pr-3 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Search by Job ID..."
+              value={filters.jobId}
+              onChange={(e) => handleFilterChange('jobId', e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
 
-        {/* Status */}
+        {/* Status Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Status
+          </label>
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange('status', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="all">All Status</option>
+            <option value="all">All Statuses</option>
             <option value="active">Active</option>
             <option value="pending">Pending</option>
-            <option value="rejected">Rejected</option>
             <option value="expired">Expired</option>
+            <option value="rejected">Rejected</option>
           </select>
         </div>
 
-        {/* Category */}
+        {/* Priority Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Priority
+          </label>
+          <select
+            value={filters.priority}
+            onChange={(e) => handleFilterChange('priority', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="normal">Normal</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+
+        {/* Category Filter */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Category
+          </label>
           <select
             value={filters.category}
             onChange={(e) => handleFilterChange('category', e.target.value)}
@@ -381,9 +510,11 @@ const AdminJobs = () => {
           </select>
         </div>
 
-        {/* Location */}
+        {/* Location Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Location
+          </label>
           <select
             value={filters.location}
             onChange={(e) => handleFilterChange('location', e.target.value)}
@@ -396,254 +527,246 @@ const AdminJobs = () => {
           </select>
         </div>
 
-        {/* Salary Range */}
+        {/* Employer Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Employer
+          </label>
+          <select
+            value={filters.employer}
+            onChange={(e) => handleFilterChange('employer', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Employers</option>
+            {getEmployers().map(employer => (
+              <option key={employer} value={employer}>{employer}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Salary Filter */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Salary Range
+          </label>
           <select
             value={filters.salary}
             onChange={(e) => handleFilterChange('salary', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="all">All Salaries</option>
-            <option value="0-50000">$0 - $50k</option>
-            <option value="50000-100000">$50k - $100k</option>
-            <option value="100000-150000">$100k - $150k</option>
-            <option value="150000-">$150k+</option>
+            <option value="0-30000">$0 - $30,000</option>
+            <option value="30000-60000">$30,000 - $60,000</option>
+            <option value="60000-100000">$60,000 - $100,000</option>
+            <option value="100000-0">$100,000+</option>
           </select>
         </div>
 
-        {/* Date Range */}
+        {/* Date Range Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Date Range
+          </label>
           <select
             value={filters.dateRange}
             onChange={(e) => handleFilterChange('dateRange', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="all">All Time</option>
+            <option value="1">Last 24 hours</option>
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
             <option value="90">Last 90 days</option>
           </select>
         </div>
       </div>
-    </div>
+
+      {/* Search Bar */}
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Search Jobs
+        </label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by title, company, location, description, or Job ID..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+    </motion.div>
   );
 
   const renderBulkActions = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">
-            {selectedJobs.size} jobs selected
-          </span>
-          
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleBulkAction('approve')}
-              disabled={selectedJobs.size === 0}
-              className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleBulkAction('reject')}
-              disabled={selectedJobs.size === 0}
-              className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-            >
-              Reject
-            </button>
-            <button
-              onClick={() => handleBulkAction('delete')}
-              disabled={selectedJobs.size === 0}
-              className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 disabled:opacity-50"
-            >
-              Delete
-            </button>
+    <AnimatePresence>
+      {selectedJobs.size > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 sticky top-0 z-10"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-blue-900">
+                {selectedJobs.size} job(s) selected
+              </span>
+              <button
+                onClick={() => setSelectedJobs(new Set())}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Clear selection
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleBulkAction('approve')}
+                className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+              >
+                <CheckCircle className="w-4 h-4 inline mr-1" />
+                Approve
+              </button>
+              <button
+                onClick={() => handleBulkAction('reject')}
+                className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+              >
+                <XCircle className="w-4 h-4 inline mr-1" />
+                Reject
+              </button>
+              <button
+                onClick={() => handleBulkAction('priority-high')}
+                className="px-3 py-1.5 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm"
+              >
+                <AlertTriangle className="w-4 h-4 inline mr-1" />
+                High Priority
+              </button>
+              <button
+                onClick={() => handleBulkAction('delete')}
+                className="px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+              >
+                <Trash2 className="w-4 h-4 inline mr-1" />
+                Delete
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            onClick={exportJobs}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-          <button
-            onClick={() => navigate('/admin/jobs/new')}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-          >
-            <Plus className="w-4 h-4" />
-            Add Job
-          </button>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 
   if (!isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">💼 Job Management</h1>
-              <p className="text-gray-600">Manage and monitor all job listings on the platform</p>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setViewMode('table')}
-                className={`px-3 py-1 text-sm rounded-md ${
-                  viewMode === 'table' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Table
-              </button>
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-3 py-1 text-sm rounded-md ${
-                  viewMode === 'grid' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Grid
-              </button>
-              <button
-                onClick={() => setViewMode('analytics')}
-                className={`px-3 py-1 text-sm rounded-md ${
-                  viewMode === 'analytics' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Analytics
-              </button>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">💼 Job Management</h1>
+          <p className="text-gray-600 mt-1">Manage and monitor all job listings on the platform</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <Filter className="w-4 h-4" />
+            {showFilters ? 'Hide' : 'Show'} Filters
+          </button>
+          
+          <button
+            onClick={exportJobs}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            Export
+          </button>
+          
+          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('table')}
+              className={`px-3 py-1.5 rounded text-sm transition-colors ${
+                viewMode === 'table' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 rounded text-sm transition-colors ${
+                viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Target className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      {renderStatsCards()}
+
+      {/* Filters */}
+      {renderFilters()}
+
+      {/* Bulk Actions */}
+      {renderBulkActions()}
+
+      {/* Jobs Table/Grid */}
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+              <p className="text-gray-600">Loading jobs...</p>
             </div>
           </div>
-
-          {/* Stats Cards */}
-          {renderStatsCards()}
-
-          {/* Filters */}
-          {renderFilters()}
-
-          {/* Bulk Actions */}
-          {renderBulkActions()}
-        </motion.div>
-
-        {/* Content */}
-        {loading ? (
+        ) : filteredJobs.length === 0 ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading jobs...</p>
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Briefcase className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-600 font-medium">No jobs found</p>
+            <p className="text-gray-400 text-sm mt-1">
+              {filters.search || filters.jobId ? 'Try adjusting your search criteria' : 'Jobs will appear here once posted'}
+            </p>
           </div>
         ) : (
-          <motion.div
-            key={viewMode}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {viewMode === 'table' && (
-              <JobTable 
-                jobs={filteredJobs} 
-                selectedJobs={selectedJobs}
-                onSelectJob={(jobId, selected) => {
-                  const newSelected = new Set(selectedJobs);
-                  if (selected) {
-                    newSelected.add(jobId);
-                  } else {
-                    newSelected.delete(jobId);
-                  }
-                  setSelectedJobs(newSelected);
-                }}
-                onSelectAll={(selected) => {
-                  if (selected) {
-                    setSelectedJobs(new Set(filteredJobs.map(job => job.id)));
-                  } else {
-                    setSelectedJobs(new Set());
-                  }
-                }}
-              />
-            )}
-            
-            {viewMode === 'grid' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredJobs.map(job => (
-                  <motion.div
-                    key={job.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{job.title}</h3>
-                        <p className="text-sm text-gray-600">{job.company}</p>
-                      </div>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        job.status === 'active' ? 'bg-green-100 text-green-800' :
-                        job.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        job.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {job.status}
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        {job.location}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <DollarSign className="w-4 h-4" />
-                        ${job.salary?.toLocaleString() || 'Not specified'}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Users className="w-4 h-4" />
-                        {job.applications || 0} applications
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <button className="flex-1 px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button className="flex-1 px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="flex-1 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-            
-            {viewMode === 'analytics' && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Analytics</h3>
-                <p className="text-gray-600">Analytics view coming soon...</p>
-              </div>
-            )}
-          </motion.div>
+          <JobTable 
+            jobs={filteredJobs}
+            selectedJobs={selectedJobs}
+            setSelectedJobs={setSelectedJobs}
+            onUpdateStatus={(jobId, status) => {
+              // Handle individual job status update
+              const jobRef = doc(db, 'jobs', jobId);
+              updateDoc(jobRef, { status }).then(() => fetchJobs());
+            }}
+            jobIdDisplay={JobIdDisplay}
+            copyJobId={copyJobId}
+            copiedJobId={copiedJobId}
+          />
         )}
       </div>
+
+      {/* Copy Success Toast */}
+      <AnimatePresence>
+        {copiedJobId && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50"
+          >
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4" />
+              <span>Job ID copied to clipboard!</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
