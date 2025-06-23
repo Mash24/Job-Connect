@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import CustomReportBuilder from '../CustomReportBuilder';
 
 // Mock Firebase
-jest.mock('../../../firebase/config', () => ({
+jest.mock('../../../firebase/config.js', () => ({
   db: {},
   auth: {
     currentUser: { email: 'admin@test.com' }

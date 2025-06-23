@@ -200,97 +200,64 @@ const UserFilterPanel = ({ filters, onFilterChange, savedFilters, onSavePreset, 
                 />
               </div>
 
-              {/* Saved Filters */}
-              {savedFilters.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Saved Filters
-                  </label>
-                  <div className="space-y-2">
-                    {savedFilters.map((preset, index) => (
-                      <button
-                        key={index}
-                        onClick={() => onLoadPreset(preset)}
-                        className="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200 hover:border-blue-300"
-                      >
-                        {preset.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex gap-2 pt-4 border-t border-gray-200">
+              {/* Preset Filters */}
+              <div className="flex items-center gap-2">
                 <button
                   onClick={clearFilters}
-                  className="flex-1 px-3 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                  className="px-3 py-1 text-sm rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
                 >
-                  Clear All
+                  Clear Filters
                 </button>
                 <button
                   onClick={() => setShowSaveDialog(true)}
-                  className="flex-1 px-3 py-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg flex items-center justify-center gap-1"
+                  className="px-3 py-1 text-sm rounded-md bg-blue-100 text-blue-700"
                 >
-                  <Save className="w-4 h-4" />
-                  Save
+                  <Save className="w-4 h-4 inline mr-1" />
+                  Save Preset
                 </button>
+                {savedFilters.map((preset, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => onLoadPreset(preset)}
+                    className="px-3 py-1 text-sm rounded-md bg-green-100 text-green-700"
+                  >
+                    {preset.name}
+                  </button>
+                ))}
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Save Preset Dialog */}
-      <AnimatePresence>
-        {showSaveDialog && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setShowSaveDialog(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-lg p-6 w-96"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Save Filter Preset</h3>
-                <button
-                  onClick={() => setShowSaveDialog(false)}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <input
-                type="text"
-                placeholder="Enter preset name..."
-                value={presetName}
-                onChange={(e) => setPresetName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                autoFocus
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowSaveDialog(false)}
-                  className="flex-1 px-3 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSavePreset}
-                  disabled={!presetName.trim()}
-                  className="flex-1 px-3 py-2 text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg"
-                >
-                  Save
-                </button>
-              </div>
-            </motion.div>
+              {/* Save Preset Dialog */}
+              {showSaveDialog && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+                  <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+                    <h4 className="font-semibold mb-2">Save Filter Preset</h4>
+                    <input
+                      type="text"
+                      placeholder="Preset name"
+                      value={presetName}
+                      onChange={(e) => setPresetName(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => setShowSaveDialog(false)}
+                        className="px-3 py-1 text-sm rounded-md bg-gray-100 text-gray-700"
+                      >
+                        <X className="w-4 h-4 inline mr-1" />
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleSavePreset}
+                        className="px-3 py-1 text-sm rounded-md bg-blue-600 text-white"
+                      >
+                        <Save className="w-4 h-4 inline mr-1" />
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

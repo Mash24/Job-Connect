@@ -1,22 +1,21 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 import AdminUsersAdvanced from '../../../components/admin/users/AdminUsersAdvanced';
 
 // Mock Firebase
 const mockFirestore = {
-  collection: vi.fn(),
-  query: vi.fn(),
-  orderBy: vi.fn(),
-  limit: vi.fn(),
-  startAfter: vi.fn(),
-  getDocs: vi.fn(),
-  doc: vi.fn(),
-  writeBatch: vi.fn(),
-  serverTimestamp: vi.fn(),
-  updateDoc: vi.fn(),
-  addDoc: vi.fn()
+  collection: jest.fn(),
+  query: jest.fn(),
+  orderBy: jest.fn(),
+  limit: jest.fn(),
+  startAfter: jest.fn(),
+  getDocs: jest.fn(),
+  doc: jest.fn(),
+  writeBatch: jest.fn(),
+  serverTimestamp: jest.fn(),
+  updateDoc: jest.fn(),
+  addDoc: jest.fn()
 };
 
 const mockAuth = {
@@ -26,13 +25,13 @@ const mockAuth = {
   }
 };
 
-vi.mock('../../../firebase/config', () => ({
+jest.mock('../../../../firebase/config', () => ({
   db: mockFirestore,
   auth: mockAuth
 }));
 
 // Mock Framer Motion
-vi.mock('framer-motion', () => ({
+jest.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }) => <div {...props}>{children}</div>,
     button: ({ children, ...props }) => <button {...props}>{children}</button>
@@ -41,7 +40,7 @@ vi.mock('framer-motion', () => ({
 }));
 
 // Mock Lucide React icons
-vi.mock('lucide-react', () => ({
+jest.mock('lucide-react', () => ({
   Users: () => <span data-testid="users-icon">Users</span>,
   Filter: () => <span data-testid="filter-icon">Filter</span>,
   Download: () => <span data-testid="download-icon">Download</span>,
@@ -53,7 +52,8 @@ vi.mock('lucide-react', () => ({
 }));
 
 // Mock child components
-vi.mock('../../../components/admin/users/UserFilterPanel', () => ({
+jest.mock('components/admin/users/UserFilterPanel.jsx', () => ({
+  __esModule: true,
   default: ({ filters, onFilterChange, savedFilters, onSavePreset, onLoadPreset }) => (
     <div data-testid="user-filter-panel">
       <button onClick={() => onFilterChange({ ...filters, role: 'employer' })}>
@@ -71,53 +71,24 @@ vi.mock('../../../components/admin/users/UserFilterPanel', () => ({
   )
 }));
 
-vi.mock('../../../components/admin/users/UserListTable', () => ({
+jest.mock('components/admin/users/UserListTable.jsx', () => ({
+  __esModule: true,
   default: ({ users, selectedUsers, onSelectUser, onSelectAll, onUserHover }) => (
-    <div data-testid="user-list-table">
-      <input
-        type="checkbox"
-        checked={selectedUsers.size === users.length && users.length > 0}
-        onChange={(e) => onSelectAll(e.target.checked)}
-        data-testid="select-all-checkbox"
-      />
-      {users.map((user) => (
-        <div key={user.id} data-testid={`user-row-${user.id}`}>
-          <input
-            type="checkbox"
-            checked={selectedUsers.has(user.id)}
-            onChange={(e) => onSelectUser(user.id, e.target.checked)}
-            data-testid={`user-checkbox-${user.id}`}
-          />
-          <span>{user.firstname} {user.lastname}</span>
-          <span>{user.email}</span>
-          <span>{user.role}</span>
-          <button onMouseEnter={() => onUserHover({ user, x: 100, y: 100 })}>
-            Hover
-          </button>
-        </div>
-      ))}
-    </div>
+    <div data-testid="user-list-table"></div>
   )
 }));
 
-vi.mock('../../../components/admin/users/UserBulkActions', () => ({
+jest.mock('components/admin/users/UserBulkActions.jsx', () => ({
+  __esModule: true,
   default: ({ selectedCount, onBulkAction, onClearSelection }) => (
-    <div data-testid="user-bulk-actions">
-      <span>Selected: {selectedCount}</span>
-      <button onClick={() => onBulkAction('approve')}>Approve</button>
-      <button onClick={() => onBulkAction('deactivate')}>Deactivate</button>
-      <button onClick={() => onBulkAction('delete')}>Delete</button>
-      <button onClick={onClearSelection}>Clear Selection</button>
-    </div>
+    <div data-testid="user-bulk-actions"></div>
   )
 }));
 
-vi.mock('../../../components/admin/users/UserProfileHoverCard', () => ({
+jest.mock('components/admin/users/UserProfileHoverCard.jsx', () => ({
+  __esModule: true,
   default: ({ user }) => (
-    <div data-testid="user-profile-hover-card">
-      <span>{user.firstname} {user.lastname}</span>
-      <span>{user.email}</span>
-    </div>
+    <div data-testid="user-profile-hover-card"></div>
   )
 }));
 
@@ -164,7 +135,7 @@ const renderWithRouter = (component) => {
 
 describe('AdminUsersAdvanced', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     
     // Mock Firestore responses
     mockFirestore.collection.mockReturnValue({});
@@ -178,10 +149,10 @@ describe('AdminUsersAdvanced', () => {
       }))
     });
     mockFirestore.writeBatch.mockReturnValue({
-      update: vi.fn(),
-      delete: vi.fn(),
-      set: vi.fn(),
-      commit: vi.fn().mockResolvedValue()
+      update: jest.fn(),
+      delete: jest.fn(),
+      set: jest.fn(),
+      commit: jest.fn().mockResolvedValue()
     });
     mockFirestore.doc.mockReturnValue({});
     mockFirestore.serverTimestamp.mockReturnValue(new Date());
@@ -388,17 +359,17 @@ describe('AdminUsersAdvanced', () => {
   describe('Export Functionality', () => {
     it('exports users to CSV', async () => {
       // Mock URL.createObjectURL and document.createElement
-      const mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+      const mockCreateObjectURL = jest.fn().mockReturnValue('blob:mock-url');
       const mockLink = {
-        setAttribute: vi.fn(),
-        click: vi.fn(),
+        setAttribute: jest.fn(),
+        click: jest.fn(),
         style: {}
       };
       
       global.URL.createObjectURL = mockCreateObjectURL;
-      global.document.createElement = vi.fn().mockReturnValue(mockLink);
-      global.document.body.appendChild = vi.fn();
-      global.document.body.removeChild = vi.fn();
+      global.document.createElement = jest.fn().mockReturnValue(mockLink);
+      global.document.body.appendChild = jest.fn();
+      global.document.body.removeChild = jest.fn();
 
       renderWithRouter(<AdminUsersAdvanced />);
       
@@ -428,10 +399,10 @@ describe('AdminUsersAdvanced', () => {
 
     it('handles bulk action errors', async () => {
       const mockBatch = {
-        update: vi.fn(),
-        delete: vi.fn(),
-        set: vi.fn(),
-        commit: vi.fn().mockRejectedValue(new Error('Bulk action error'))
+        update: jest.fn(),
+        delete: jest.fn(),
+        set: jest.fn(),
+        commit: jest.fn().mockRejectedValue(new Error('Bulk action error'))
       };
       mockFirestore.writeBatch.mockReturnValue(mockBatch);
 

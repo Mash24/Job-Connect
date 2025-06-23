@@ -30,5 +30,8 @@ module.exports = {
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname'
-  ]
+  ],
+  moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
+  resetMocks: true,
+  moduleDirectories: ['node_modules', 'src'],
 }; 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ApplicationsOverTime from '../../../components/admin/charts/ApplicationsOverTime';
+import ApplicationsOverTime from 'components/admin/charts/ApplicationsOverTime.jsx';
 
 // Mock Firebase
-jest.mock('../../../firebase/config', () => ({
+jest.mock('../../../../firebase/config', () => ({
   db: {},
 }));
 
@@ -18,7 +18,7 @@ jest.mock('firebase/firestore', () => ({
 }));
 
 // Mock ChartCard
-jest.mock('../../../components/admin/charts/ChartCard', () => {
+jest.mock('components/admin/charts/ChartCard.jsx', () => {
   return function MockChartCard({ children, title, icon }) {
     return (
       <div data-testid="chart-card">

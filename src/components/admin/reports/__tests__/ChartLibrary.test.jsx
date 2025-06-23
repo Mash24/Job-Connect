@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ChartLibrary from '../ChartLibrary';
 
 // Mock Firebase
-jest.mock('../../../firebase/config', () => ({
+jest.mock('../../../firebase/config.js', () => ({
   db: {}
 }));
 

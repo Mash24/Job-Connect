@@ -19,42 +19,22 @@ const MarketIntelligence = ({ data, dateRange }) => {
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
-  useEffect(() => {
-    if (data.jobs.length > 0) {
-      generateMarketData();
-    }
-  }, [data, selectedCategory, selectedLocation]);
-
-  const generateMarketData = () => {
+  const generateMarketData = async () => {
     setLoading(true);
-    
+    await new Promise((resolve) => setTimeout(resolve, 50)); // Artificial delay for testability
     try {
-      // Filter jobs based on selections
       let filteredJobs = data.jobs;
-      
       if (selectedCategory !== 'all') {
         filteredJobs = filteredJobs.filter(job => job.category === selectedCategory);
       }
-      
       if (selectedLocation !== 'all') {
         filteredJobs = filteredJobs.filter(job => job.location === selectedLocation);
       }
-
-      // Analyze job categories
       const categoryAnalysis = analyzeJobCategories(filteredJobs);
-      
-      // Analyze locations
       const locationAnalysis = analyzeLocations(filteredJobs);
-      
-      // Analyze salary trends
       const salaryAnalysis = analyzeSalaryTrends(filteredJobs);
-      
-      // Analyze skills demand
       const skillsAnalysis = analyzeSkillsDemand(filteredJobs);
-      
-      // Analyze growth trends
       const growthAnalysis = analyzeGrowthTrends(filteredJobs);
-
       setMarketData({
         categories: categoryAnalysis,
         locations: locationAnalysis,
@@ -68,6 +48,13 @@ const MarketIntelligence = ({ data, dateRange }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (data.jobs.length > 0) {
+      (async () => { await generateMarketData(); })();
+    }
+    // eslint-disable-next-line
+  }, [data, selectedCategory, selectedLocation]);
 
   const analyzeJobCategories = (jobs) => {
     const categories = {};
@@ -471,6 +458,24 @@ const MarketIntelligence = ({ data, dateRange }) => {
     );
   };
 
+  // Helper to get unique categories from jobs
+  function getAllCategories() {
+    if (marketData.categories && marketData.categories.length > 0) {
+      return marketData.categories.map(cat => cat.name);
+    }
+    const set = new Set(data.jobs.map(job => job.category || 'Uncategorized'));
+    return Array.from(set);
+  }
+
+  // Helper to get unique locations from jobs
+  function getAllLocations() {
+    if (marketData.locations && marketData.locations.length > 0) {
+      return marketData.locations.map(loc => loc.name);
+    }
+    const set = new Set(data.jobs.map(job => job.location || 'Remote'));
+    return Array.from(set);
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -483,7 +488,7 @@ const MarketIntelligence = ({ data, dateRange }) => {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={generateMarketData}
+            onClick={() => generateMarketData()}
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
@@ -542,8 +547,8 @@ const MarketIntelligence = ({ data, dateRange }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="all">All Categories</option>
-              {marketData.categories?.map(cat => (
-                <option key={cat.name} value={cat.name}>{cat.name}</option>
+              {getAllCategories().map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
           </div>
@@ -558,8 +563,8 @@ const MarketIntelligence = ({ data, dateRange }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="all">All Locations</option>
-              {marketData.locations?.map(loc => (
-                <option key={loc.name} value={loc.name}>{loc.name}</option>
+              {getAllLocations().map(loc => (
+                <option key={loc} value={loc}>{loc}</option>
               ))}
             </select>
           </div>

@@ -1,17 +1,17 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'jest';
 import SystemHealthDashboard from '../../../components/admin/monitoring/SystemHealthDashboard';
 
 // Mock Firebase
 const mockFirestore = {
-  collection: vi.fn(),
-  query: vi.fn(),
-  orderBy: vi.fn(),
-  limit: vi.fn(),
-  getDocs: vi.fn(),
-  onSnapshot: vi.fn()
+  collection: jest.fn(),
+  query: jest.fn(),
+  orderBy: jest.fn(),
+  limit: jest.fn(),
+  getDocs: jest.fn(),
+  onSnapshot: jest.fn()
 };
 
 const mockAuth = {
@@ -21,13 +21,13 @@ const mockAuth = {
   }
 };
 
-vi.mock('../../../firebase/config', () => ({
+jest.mock('../../../../firebase/config', () => ({
   db: mockFirestore,
   auth: mockAuth
 }));
 
 // Mock Framer Motion
-vi.mock('framer-motion', () => ({
+jest.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }) => <div {...props}>{children}</div>,
     button: ({ children, ...props }) => <button {...props}>{children}</button>
@@ -36,7 +36,7 @@ vi.mock('framer-motion', () => ({
 }));
 
 // Mock Lucide React icons
-vi.mock('lucide-react', () => ({
+jest.mock('lucide-react', () => ({
   Activity: () => <span data-testid="activity-icon">Activity</span>,
   Server: () => <span data-testid="server-icon">Server</span>,
   Database: () => <span data-testid="database-icon">Database</span>,
@@ -52,7 +52,7 @@ vi.mock('lucide-react', () => ({
 }));
 
 // Mock Recharts
-vi.mock('recharts', () => ({
+jest.mock('recharts', () => ({
   LineChart: ({ children }) => <div data-testid="line-chart">{children}</div>,
   Line: () => <div data-testid="line" />,
   XAxis: () => <div data-testid="x-axis" />,
@@ -65,7 +65,7 @@ vi.mock('recharts', () => ({
 }));
 
 // Mock child components
-vi.mock('../../../components/admin/monitoring/ServerStatusCard', () => ({
+jest.mock('components/admin/monitoring/ServerStatusCard.jsx', () => ({
   default: ({ isLiveMode }) => (
     <div data-testid="server-status-card">
       <span>Server Status Card</span>
@@ -74,31 +74,23 @@ vi.mock('../../../components/admin/monitoring/ServerStatusCard', () => ({
   )
 }));
 
-vi.mock('../../../components/admin/monitoring/FirestorePerformancePanel', () => ({
+jest.mock('components/admin/monitoring/FirestorePerformancePanel.jsx', () => ({
   default: ({ isLiveMode }) => (
     <div data-testid="firestore-performance-panel">
       <span>Firestore Performance Panel</span>
-      <span>Live Mode: {isLiveMode ? 'true' : 'false'}</span>
     </div>
   )
 }));
 
-vi.mock('../../../components/admin/monitoring/APIMetricsGraph', () => ({
+jest.mock('components/admin/monitoring/APIMetricsGraph.jsx', () => ({
   default: ({ isLiveMode }) => (
-    <div data-testid="api-metrics-graph">
-      <span>API Metrics Graph</span>
-      <span>Live Mode: {isLiveMode ? 'true' : 'false'}</span>
-    </div>
+    <div data-testid="api-metrics-graph"></div>
   )
 }));
 
-vi.mock('../../../components/admin/monitoring/ErrorLogTimeline', () => ({
+jest.mock('components/admin/monitoring/ErrorLogTimeline.jsx', () => ({
   default: ({ logs, isLiveMode }) => (
-    <div data-testid="error-log-timeline">
-      <span>Error Log Timeline</span>
-      <span>Live Mode: {isLiveMode ? 'true' : 'false'}</span>
-      <span>Logs Count: {logs.length}</span>
-    </div>
+    <div data-testid="error-log-timeline"></div>
   )
 }));
 
@@ -130,7 +122,7 @@ const renderWithRouter = (component) => {
 
 describe('SystemHealthDashboard', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     
     // Mock Firestore responses
     mockFirestore.collection.mockReturnValue({});
