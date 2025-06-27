@@ -25,7 +25,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore();
 const storage = getStorage();
-const analytics = getAnalytics(app);
+let analytics;
+if (typeof window !== 'undefined') {
+  analytics = getAnalytics(app);
+}
 const googleProvider = new GoogleAuthProvider();
 
 // ✅ Set local persistence to keep users logged in on refresh

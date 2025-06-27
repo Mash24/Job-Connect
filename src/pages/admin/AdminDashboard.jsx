@@ -11,7 +11,7 @@ import { auth, db } from '../../firebase/config';
 import { doc, getDoc, collection, getDocs, query, orderBy, limit, where } from 'firebase/firestore';
 
 import ApplicationsOverTime from '../../components/admin/charts/ApplicationsOverTime';
-import UserSignupsOverTime from '../../components/admin/charts/UserSignupsOverTime';
+// import UserSignupsOverTime from '../../components/admin/charts/UserSignupsOverTime';
 import JobStatusBreakdown from '../../components/admin/charts/JobStatusBreakdown';
 import RecentActivityFeed from '../../pages/admin/RecentActivityFeed';
 
@@ -517,7 +517,6 @@ const AdminDashboard = () => {
         {/* Charts Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           <ApplicationsOverTime />
-          <UserSignupsOverTime />
           <JobStatusBreakdown />
         </div>
 
