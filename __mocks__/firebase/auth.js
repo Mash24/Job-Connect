@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 // Mock for firebase/auth
 export const getAuth = jest.fn(() => ({
   currentUser: { uid: 'test-user-uid' },

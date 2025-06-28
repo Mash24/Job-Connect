@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 // Mock for firebase/storage
 export const getStorage = jest.fn(() => ({}));
 

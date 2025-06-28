@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 // Mock for firebase/app
 export const initializeApp = jest.fn(() => ({
   name: 'test-app',

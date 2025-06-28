@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 // Mock for firebase/analytics
 export const getAnalytics = jest.fn(() => ({}));
 export const isSupported = jest.fn(() => Promise.resolve(true));
