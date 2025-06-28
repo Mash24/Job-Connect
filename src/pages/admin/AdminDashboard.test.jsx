@@ -52,10 +52,6 @@ jest.mock('firebase/firestore', () => {
   };
 });
 
-jest.mock('firebase/app');
-jest.mock('firebase/auth');
-jest.mock('firebase/analytics');
-
 import AdminLayout from '../../components/admin/layout/AdminLayout';
 import AdminDashboard from './AdminDashboard';
 
