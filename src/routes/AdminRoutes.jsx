@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Route } from 'react-router-dom';
 
 import AdminLayout from '../components/admin/layout/AdminLayout';
 import AdminDashboard from '../pages/admin/AdminDashboard';
-import AdminUsers from '../pages/admin/AdminUsers';
+const AdminUsers = lazy(() => import('../pages/admin/AdminUsers'));
+const AdminReports = lazy(() => import('../pages/admin/AdminReports'));
+const AdminAnalytics = lazy(() => import('../pages/admin/AdminAnalytics'));
 import AdminJobs from '../pages/admin/AdminJobs';
-import AdminReports from '../pages/admin/AdminReports';
-import AdminAnalytics from '../pages/admin/AdminAnalytics';
 import AdminLogs from '../pages/admin/AdminLogs';
 import AdminSettings from '../pages/admin/AdminSettings';
 import AdminAnnouncements from '../pages/admin/AdminAnnouncements';
@@ -24,10 +24,22 @@ const AdminRoutes = () => (
   }>
     <Route index element={<AdminDashboard />} />
     <Route path="dashboard" element={<AdminDashboard />} />
-    <Route path="users" element={<AdminUsers />} />
+    <Route path="users" element={
+      <Suspense fallback={<div className="text-center p-10">Loading Users...</div>}>
+        <AdminUsers />
+      </Suspense>
+    } />
     <Route path="jobs" element={<AdminJobs />} />
-    <Route path="reports" element={<AdminReports />} />
-    <Route path="analytics" element={<AdminAnalytics />} />
+    <Route path="reports" element={
+      <Suspense fallback={<div className="text-center p-10">Loading Reports...</div>}>
+        <AdminReports />
+      </Suspense>
+    } />
+    <Route path="analytics" element={
+      <Suspense fallback={<div className="text-center p-10">Loading Analytics...</div>}>
+        <AdminAnalytics />
+      </Suspense>
+    } />
     <Route path="logs" element={<AdminLogs />} />
     <Route path="settings" element={<AdminSettings />} />
     <Route path="announcements" element={<AdminAnnouncements />} />

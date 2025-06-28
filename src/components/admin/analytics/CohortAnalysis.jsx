@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Users, Calendar, TrendingUp, BarChart3, 
   Filter, Download, Eye, EyeOff, RefreshCw
@@ -272,11 +271,7 @@ const CohortAnalysis = ({ data, dateRange }) => {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-        >
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Users className="w-5 h-5 text-blue-600" />
@@ -286,14 +281,9 @@ const CohortAnalysis = ({ data, dateRange }) => {
               <p className="text-2xl font-bold text-gray-900">{totalUsers.toLocaleString()}</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-        >
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <TrendingUp className="w-5 h-5 text-green-600" />
@@ -303,14 +293,9 @@ const CohortAnalysis = ({ data, dateRange }) => {
               <p className="text-2xl font-bold text-gray-900">{avgRetention.toFixed(1)}%</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-        >
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <BarChart3 className="w-5 h-5 text-purple-600" />
@@ -321,7 +306,7 @@ const CohortAnalysis = ({ data, dateRange }) => {
               <p className="text-sm text-gray-600">{bestCohort.retention.toFixed(1)}% retention</p>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     );
   };

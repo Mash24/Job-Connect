@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   TrendingUp, Calendar, Users, Briefcase, Target, 
   Zap, Eye, EyeOff, Filter, Download, RefreshCw
@@ -344,23 +343,18 @@ const PredictiveInsights = ({ data, dateRange }) => {
       {!loading && (
         <div className="space-y-6">
           {selectedMetrics.map((metric) => (
-            <motion.div
+            <div
               key={metric}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
             >
               {renderForecastChart(metric)}
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
 
       {/* Insights Summary */}
       {!loading && Object.keys(forecastData).length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
         >
           <div className="flex items-center gap-2 mb-4">
@@ -396,7 +390,7 @@ const PredictiveInsights = ({ data, dateRange }) => {
               );
             })}
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaBriefcase, FaUserTie } from "react-icons/fa";
 import { auth, db } from "../firebase/config";

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaCity, FaGlobeAmericas, FaLocationArrow, FaMapMarkedAlt, FaMapPin } from 'react-icons/fa';
 import countryList from 'react-select-country-list';
 
 const LocationInputStep = ( {onSave}) => {
-  const [ useCurrentLocation, setUseCurrentLocation ] = useState(false);
   const [ locationData, setLocationData ] = useState({
     country: '',
     city: '',
@@ -20,7 +19,6 @@ const LocationInputStep = ( {onSave}) => {
   };
 
   const handleUseMyLocation = () => {
-    setUseCurrentLocation(true);
     if (!navigator.geolocation) return alert ('Geolocation is not supported by your browser.');
 
     navigator.geolocation.getCurrentPosition(async(position) => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence } from "framer-motion"
 import { Link } from 'react-router-dom'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 import TITLE from '../components/common/Title'
@@ -24,7 +24,7 @@ const faqs = [
       },
       {
         question: "Can I use Job Connect on my mobile device?",
-        answer: "Yes, our platform is fully optimized for mobile use. You can access all features through your phone’s browser or our upcoming mobile app.",
+        answer: "Yes, our platform is fully optimized for mobile use. You can access all features through your phone's browser or our upcoming mobile app.",
       },
     ],
   },
@@ -95,8 +95,8 @@ const faqs = [
         answer: "Click on the 'Forgot Password' link on the login page and follow the instructions to reset your password.",
       },
       {
-        question: "I’m having trouble logging in. What should I do?",
-        answer: "Ensure that you’re entering the correct email and password. If the issue persists, try clearing your browser cache or using a different device.",
+        question: "I'm having trouble logging in. What should I do?",
+        answer: "Ensure that you're entering the correct email and password. If the issue persists, try clearing your browser cache or using a different device.",
       },
       {
         question: "How can I contact support?",
@@ -168,7 +168,7 @@ const FAQ = () => {
 
       {/* Contact Support CTA */}
       <motion.div
-          inition = {{ opacity: 0, y:20 }}
+          initial = {{ opacity: 0, y:20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: .7 }}
           className='text-center mt-16'

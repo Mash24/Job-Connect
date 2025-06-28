@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { X, Palette, Layout, FileText, Eye, Download, Share2, Calendar } from 'lucide-react';
 
 const ReportSettings = ({ reportData, onUpdate, onClose }) => {

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { motion } from 'framer-motion';
 
 const STATUS_COLORS = {
   approved: '#10b981', // green
@@ -57,11 +56,8 @@ const JobStatusBreakdown = () => {
   };
 
   return (
-    <motion.div
+    <div
       className="bg-white rounded-xl shadow p-6 flex flex-col h-full"
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, type: 'spring', delay: 0.2 }}
     >
       <h3 className="text-lg font-semibold mb-2">
         Job Status Breakdown
@@ -112,7 +108,7 @@ const JobStatusBreakdown = () => {
           </PieChart>
         </ResponsiveContainer>
       )}
-    </motion.div>
+    </div>
   );
 };
 

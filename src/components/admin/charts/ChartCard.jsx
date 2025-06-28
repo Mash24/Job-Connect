@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { ChevronDown, RefreshCw } from 'lucide-react';
 import { filterByPeriod, calculateTotal, comparePeriods, formatRelativeTime } from '../../../lib/utils';
 
 const ChartCard = ({ 
   title, 
-  icon, 
   data = [], 
   children, 
   period = 'all',

@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { 
   FileText, Calendar, User, BarChart3, Eye, Edit, 
   Download, Share2, Trash2, MoreVertical

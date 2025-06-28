@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { AlertTriangle, XCircle, Info, X, Check, Clock, Zap, Server, Database } from 'lucide-react';
 
 const AlertCenter = ({ alerts, onDismiss, onAcknowledge }) => {
@@ -83,12 +83,8 @@ const AlertCenter = ({ alerts, onDismiss, onAcknowledge }) => {
       <div className="divide-y divide-gray-100">
         <AnimatePresence>
           {alerts.map((alert, index) => (
-            <motion.div
+            <div
               key={alert.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ delay: index * 0.1 }}
               className={`p-4 ${getSeverityColor(alert.severity)}`}
             >
               <div className="flex items-start gap-3">
@@ -172,7 +168,7 @@ const AlertCenter = ({ alerts, onDismiss, onAcknowledge }) => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </AnimatePresence>
       </div>

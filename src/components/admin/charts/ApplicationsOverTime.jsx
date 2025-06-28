@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { motion } from 'framer-motion';
 import { groupByDate, filterByPeriod } from '../../../lib/utils';
 import ChartCard from './ChartCard';
 

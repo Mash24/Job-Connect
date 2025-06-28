@@ -1,6 +1,5 @@
 import React from 'react';
 import CountUp from 'react-countup';
-import { motion } from 'framer-motion';
 
 const AdminStatCard = ({ title, value, icon, color = 'from-blue-500 to-indigo-500' }) => {
   return (

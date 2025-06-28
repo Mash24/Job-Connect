@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { 
   X, Download, FileText, BarChart3, Image, Calendar, 
   Settings, Eye, Share2, Mail, Clock, CheckCircle
@@ -218,9 +217,7 @@ const ExportPanel = ({ onExport, onClose }) => {
 
       {/* Export Progress */}
       {isExporting && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
         >
           <div className="flex items-center gap-3 mb-3">
@@ -234,7 +231,7 @@ const ExportPanel = ({ onExport, onClose }) => {
             ></div>
           </div>
           <p className="text-sm text-blue-700 mt-2">{exportProgress}% complete</p>
-        </motion.div>
+        </div>
       )}
 
       {/* File Size Estimate */}

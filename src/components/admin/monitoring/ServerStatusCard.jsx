@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Cpu, Memory, HardDrive, Network } from 'lucide-react';
 
 const ServerStatusCard = ({ isLiveMode }) => {

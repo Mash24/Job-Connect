@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Target, MapPin, DollarSign, TrendingUp, BarChart3, 
   Filter, Download, Eye, EyeOff, RefreshCw, Globe
@@ -386,9 +385,7 @@ const MarketIntelligence = ({ data, dateRange }) => {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
         >
           <div className="flex items-center gap-3">
@@ -400,12 +397,9 @@ const MarketIntelligence = ({ data, dateRange }) => {
               <p className="text-2xl font-bold text-gray-900">{totalJobs.toLocaleString()}</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+        <div
           className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
         >
           <div className="flex items-center gap-3">
@@ -417,12 +411,9 @@ const MarketIntelligence = ({ data, dateRange }) => {
               <p className="text-2xl font-bold text-gray-900">${avgSalary.toLocaleString()}</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <div
           className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
         >
           <div className="flex items-center gap-3">
@@ -435,12 +426,9 @@ const MarketIntelligence = ({ data, dateRange }) => {
               <p className="text-sm text-gray-600">{topCategory.count} jobs</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        <div
           className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
         >
           <div className="flex items-center gap-3">
@@ -453,7 +441,7 @@ const MarketIntelligence = ({ data, dateRange }) => {
               <p className="text-sm text-gray-600">{topLocation.count} jobs</p>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     );
   };

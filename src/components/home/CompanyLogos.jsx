@@ -1,6 +1,5 @@
 import React from 'react';
 import { trackFeatureUsage } from '../../services/analytics';
-import { motion } from 'framer-motion';
 
 const CompanyLogos = () => {
   const companies = [

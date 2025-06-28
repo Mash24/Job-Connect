@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Filter, Check, Clock, AlertTriangle, Info, XCircle, Bell } from 'lucide-react';
 
 const NotificationFilters = ({ filters, onFilterChange, unreadCount, onMarkAllRead }) => {

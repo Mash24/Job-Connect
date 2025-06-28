@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { 
   BarChart3, Users, Briefcase, Target, Activity,
   TrendingUp, Brain, Users as UsersIcon, Globe,
@@ -228,11 +227,7 @@ const AdminAnalytics = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-100 rounded-lg">
               <BarChart3 className="w-6 h-6 text-blue-600" />
@@ -261,11 +256,7 @@ const AdminAnalytics = () => {
 
           {/* Key Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-            >
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">New Users</p>
@@ -282,14 +273,9 @@ const AdminAnalytics = () => {
                 </span>
                 <span className="text-sm text-gray-500">vs previous period</span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-            >
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">New Jobs</p>
@@ -306,14 +292,9 @@ const AdminAnalytics = () => {
                 </span>
                 <span className="text-sm text-gray-500">vs previous period</span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-            >
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Applications</p>
@@ -330,14 +311,9 @@ const AdminAnalytics = () => {
                 </span>
                 <span className="text-sm text-gray-500">vs previous period</span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-            >
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Conversion Rate</p>
@@ -352,7 +328,7 @@ const AdminAnalytics = () => {
                   {(analyticsData.metrics?.avgApplicationsPerJob || 0).toFixed(1)} apps/job
                 </span>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Module Tabs */}
@@ -378,17 +354,12 @@ const AdminAnalytics = () => {
               );
             })}
           </div>
-        </motion.div>
+        </div>
 
         {/* Module Content */}
-        <motion.div
-          key={activeModule}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-        >
+        <div>
           {renderModuleContent()}
-        </motion.div>
+        </div>
       </div>
     </div>
   );

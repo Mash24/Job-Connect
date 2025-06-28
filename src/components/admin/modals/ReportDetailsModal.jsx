@@ -12,10 +12,10 @@ const ReportDetailsModal = ({
   onAssign,
   onNoteChange
 }) => {
-  if (!report) return null;
+  const [assignedTo, setAssignedTo] = useState(report?.assignedTo || '');
+  const [note, setNote] = useState(report?.note || '');
 
-  const [assignedTo, setAssignedTo] = useState(report.assignedTo || '');
-  const [note, setNote] = useState(report.note || '');
+  if (!report) return null;
 
   const handleStatusChange = (status) => {
     onUpdateStatus(status);

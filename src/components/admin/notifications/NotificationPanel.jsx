@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, AlertTriangle, Info, XCircle, Clock, User, Mail, MessageSquare, Zap, Database, Server } from 'lucide-react';
 
-const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead, currentAdmin }) => {
+const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
   const [selectedNotification, setSelectedNotification] = useState(null);
 
   const getSeverityColor = (severity) => {
