@@ -119,7 +119,14 @@
     ],
     "testEnvironment": "jsdom",
     "moduleNameMapper": {
-      "\\.(css|scss|sass|less)$": "identity-obj-proxy"
-    }
+      "\\.(css|scss|sass|less)$": "identity-obj-proxy",
+      "^firebase/(.*)$": "<rootDir>/__mocks__/firebase/$1.js"
+    },
+    "transform": {
+      "^.+\\.(js|jsx)$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(firebase)/)"
+    ]
   }
 }
