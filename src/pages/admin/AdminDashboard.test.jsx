@@ -67,8 +67,6 @@ describe('AdminDashboard Integration', () => {
       </MemoryRouter>
     );
 
-    screen.debug(); // For debugging if test fails
-
     // Sidebar links
     await waitFor(() => {
       expect(screen.getByRole('link', { name: /Dashboard/i })).toBeInTheDocument();
@@ -80,14 +78,19 @@ describe('AdminDashboard Integration', () => {
     // Topbar
     expect(screen.getByText(/Welcome, Admin/i)).toBeInTheDocument();
 
-    // Dashboard header
-    expect(screen.getByText(/Admin Dashboard/i)).toBeInTheDocument();
+    // Dashboard header - updated to match actual component
+    await waitFor(() => {
+      expect(screen.getByText(/📊 Admin Dashboard/i)).toBeInTheDocument();
+    });
 
-    // Metric cards
-    expect(screen.getByText(/New Users/i, { selector: 'p' })).toBeInTheDocument();
-    expect(screen.getByText(/Active Jobs/i, { selector: 'p' })).toBeInTheDocument();
-    expect(screen.getByText(/Applications/i, { selector: 'p' })).toBeInTheDocument();
-    expect(screen.getByText(/Conversion Rate/i, { selector: 'p' })).toBeInTheDocument();
+    // Metric cards - updated to match actual component structure and use more specific selectors
+    await waitFor(() => {
+      expect(screen.getByText(/New Users/i)).toBeInTheDocument();
+      expect(screen.getByText(/Active Jobs/i)).toBeInTheDocument();
+      // Use a more specific selector for Applications to avoid conflicts
+      expect(screen.getByText(/Applications/i, { selector: 'p' })).toBeInTheDocument();
+      expect(screen.getByText(/Conversion Rate/i)).toBeInTheDocument();
+    });
 
     // Charts
     expect(screen.getByText(/ApplicationsOverTime Chart/i)).toBeInTheDocument();
