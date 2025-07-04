@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filter, Check, Clock, AlertTriangle, Info, XCircle, Bell } from 'lucide-react';
+import { Filter, Clock, AlertTriangle, Info, XCircle, Bell } from 'lucide-react';
 
 const NotificationFilters = ({ filters, onFilterChange, unreadCount, onMarkAllRead }) => {
   const severityOptions = [

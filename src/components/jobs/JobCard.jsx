@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   Bookmark, BookmarkCheck, Briefcase, MapPin, DollarSign, 
   ExternalLink, Building2, Clock, Users, Star, 
@@ -20,7 +20,6 @@ import { db } from '../../firebase/config';
  */
 
 const JobCard = ({ job, isSaved = false, userId, onView }) => {
-  const [isHovered, setIsHovered] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
 
@@ -90,83 +89,58 @@ const JobCard = ({ job, isSaved = false, userId, onView }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+    <div
       className="relative bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 
                  rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 p-6 
                  w-full max-w-md mx-auto group cursor-pointer"
     >
       {/* Priority Badge */}
       {job.priority && job.priority !== 'normal' && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
+        <div
           className={`absolute top-4 left-4 px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(job.priority)}`}
         >
           {job.priority}
-        </motion.div>
+        </div>
       )}
 
       {/* Action Buttons */}
       <div className="absolute top-4 right-4 flex items-center gap-2">
         {/* Share Button */}
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={handleShare}
+        <button
           className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full transition-all"
           aria-label="Share job"
+          onClick={handleShare}
         >
           <Share2 className="w-4 h-4" />
-        </motion.button>
+        </button>
 
         {/* Save Button */}
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={handleSave}
-          disabled={isSaving}
+        <button
           className={`p-1.5 rounded-full transition-all ${
             isSaved 
               ? 'text-red-500 hover:text-red-600 hover:bg-red-50' 
               : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50'
           }`}
           aria-label={isSaved ? 'Unsave job' : 'Save job'}
+          onClick={handleSave}
+          disabled={isSaving}
         >
           <AnimatePresence mode="wait">
             {isSaving ? (
-              <motion.div
-                key="loading"
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              <div
                 className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
               />
             ) : isSaved ? (
-              <motion.div
-                key="saved"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-              >
-                <Heart className="w-4 h-4 fill-current" />
-              </motion.div>
+              <div
+                className="w-4 h-4 fill-current"
+              />
             ) : (
-              <motion.div
-                key="unsaved"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-              >
-                <Bookmark className="w-4 h-4" />
-              </motion.div>
+              <div
+                className="w-4 h-4"
+              />
             )}
           </AnimatePresence>
-        </motion.button>
+        </button>
       </div>
 
       {/* Company Logo */}
@@ -220,22 +194,19 @@ const JobCard = ({ job, isSaved = false, userId, onView }) => {
       {job.tags?.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           {job.tags.slice(0, 3).map((tag, idx) => (
-            <motion.span
+            <div
               key={idx}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
               className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 
                          text-xs font-medium px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800"
             >
               {tag}
-            </motion.span>
+            </div>
           ))}
           {job.tags.length > 3 && (
-            <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 
+            <div className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 
                            text-xs font-medium px-2.5 py-1 rounded-full">
               +{job.tags.length - 3} more
-            </span>
+            </div>
           )}
         </div>
       )}
@@ -267,22 +238,18 @@ const JobCard = ({ job, isSaved = false, userId, onView }) => {
       {/* Actions */}
       <div className="flex items-center justify-between gap-3">
         {/* View Details */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => onView(job)}
+        <button
           className="flex-1 flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 
                      hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+          onClick={() => onView(job)}
         >
           <Eye className="w-4 h-4" />
           View Details
-        </motion.button>
+        </button>
 
         {/* Apply Button */}
         {job.externalUrl && (
-          <motion.a
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <a
             href={job.externalUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -291,17 +258,14 @@ const JobCard = ({ job, isSaved = false, userId, onView }) => {
           >
             <ExternalLink className="w-4 h-4" />
             Apply
-          </motion.a>
+          </a>
         )}
       </div>
 
       {/* Share Menu */}
       <AnimatePresence>
         {showShareMenu && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+          <div
             className="absolute top-12 right-4 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 
                        rounded-lg shadow-lg p-2 z-10"
           >
@@ -326,10 +290,10 @@ const JobCard = ({ job, isSaved = false, userId, onView }) => {
             >
               Share on LinkedIn
             </button>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
 

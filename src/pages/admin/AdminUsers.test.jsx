@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock Firebase
@@ -75,7 +75,7 @@ describe('AdminUsers Component', () => {
 
   it('renders AdminUsersAdvanced by default', async () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AdminUsers />
       </MemoryRouter>
     );

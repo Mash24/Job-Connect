@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { FaBuilding, FaGlobeAmericas, FaCity, FaMapPin, FaMapMarkedAlt, FaLocationArrow } from 'react-icons/fa';
 import countryList from 'react-select-country-list';
 import { auth, db } from '../../../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 
 const Step2_CompanyLocation = ({ onNext, onBack }) => {
-  const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [locationData, setLocationData] = useState({
     country: '',
     city: '',
@@ -22,7 +20,6 @@ const Step2_CompanyLocation = ({ onNext, onBack }) => {
   };
 
   const handleUseMyLocation = () => {
-    setUseCurrentLocation(true);
     if (!navigator.geolocation) return alert('Geolocation is not supported by your browser.');
 
     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -70,21 +67,16 @@ const Step2_CompanyLocation = ({ onNext, onBack }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="bg-white p-8 rounded-2xl shadow-xl border max-w-2xl mx-auto"
-    >
+    <div className="bg-white p-8 rounded-2xl shadow-xl border max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-        <FaBuilding className="text-blue-500" /> Step 2: Where’s Your Office?
-        </h2>
+        <FaBuilding className="text-blue-500" /> Step 2: Where's Your Office?
+      </h2>
 
       <button onClick={handleUseMyLocation} className="text-blue-600 text-sm underline mb-4 flex items-center gap-2">
         <FaLocationArrow /> Use My Current Location
       </button>
 
-      <p className="text-gray-500 text-sm mb-4">You can either auto-fill your company’s address or manually enter your workplace location.</p>
+      <p className="text-gray-500 text-sm mb-4">You can either auto-fill your company's address or manually enter your workplace location.</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex items-center gap-3">
@@ -158,7 +150,7 @@ const Step2_CompanyLocation = ({ onNext, onBack }) => {
           </button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 };
 

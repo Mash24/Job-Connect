@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion'
 import { auth, db } from '../../../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 import Select from 'react-select';
@@ -109,10 +108,7 @@ const Step4_Experience = ({ onNext }) => {
     
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <div
       className='max-w-4xl mx-auto bg-white shadow-md p-8 rounded-lg'
     >
 
@@ -203,7 +199,7 @@ const Step4_Experience = ({ onNext }) => {
           </button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 };
 

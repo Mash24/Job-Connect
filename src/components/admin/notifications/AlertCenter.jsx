@@ -82,7 +82,7 @@ const AlertCenter = ({ alerts, onDismiss, onAcknowledge }) => {
       {/* Alerts List */}
       <div className="divide-y divide-gray-100">
         <AnimatePresence>
-          {alerts.map((alert, index) => (
+          {alerts.map((alert) => (
             <div
               key={alert.id}
               className={`p-4 ${getSeverityColor(alert.severity)}`}

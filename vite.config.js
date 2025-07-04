@@ -40,12 +40,17 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@mui/material', '@mui/icons-material'],
-          utils: ['date-fns', 'lodash-es'],
-          forms: ['react-hook-form', 'yup'],
-          charts: ['recharts', 'd3'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('recharts')) return 'charts';
+            if (id.includes('d3')) return 'charts';
+            if (id.includes('@mui/material') || id.includes('@mui/icons-material')) return 'ui';
+            if (id.includes('date-fns') || id.includes('lodash-es')) return 'utils';
+            if (id.includes('react-hook-form') || id.includes('yup')) return 'forms';
+            if (id.includes('react-select')) return 'forms';
+            if (id.includes('framer-motion')) return 'motion';
+            return 'vendor';
+          }
         },
       },
     },

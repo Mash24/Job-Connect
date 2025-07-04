@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Users, Calendar, TrendingUp, BarChart3, 
   Filter, Download, Eye, EyeOff, RefreshCw
@@ -8,20 +8,14 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-const CohortAnalysis = ({ data, dateRange }) => {
+const CohortAnalysis = ({ data }) => {
   const [cohortPeriod, setCohortPeriod] = useState('month'); // week, month, quarter
   const [retentionPeriods, setRetentionPeriods] = useState(['7', '14', '30', '60', '90']);
   const [cohortData, setCohortData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState('heatmap'); // heatmap, chart
 
-  useEffect(() => {
-    if (data.users.length > 0) {
-      generateCohortData();
-    }
-  }, [data, cohortPeriod, retentionPeriods]);
-
-  const generateCohortData = () => {
+  const generateCohortData = useCallback(() => {
     setLoading(true);
     
     try {
@@ -44,7 +38,13 @@ const CohortAnalysis = ({ data, dateRange }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [data.users, cohortPeriod, data.applications, retentionPeriods]);
+
+  useEffect(() => {
+    if (data.users.length > 0) {
+      generateCohortData();
+    }
+  }, [data, cohortPeriod, retentionPeriods, generateCohortData]);
 
   const groupUsersByCohort = (users, period) => {
     const cohorts = {};
@@ -54,20 +54,24 @@ const CohortAnalysis = ({ data, dateRange }) => {
       let cohortKey;
       
       switch (period) {
-        case 'week':
+        case 'week': {
           const weekStart = new Date(userDate);
           weekStart.setDate(userDate.getDate() - userDate.getDay());
           cohortKey = weekStart.toISOString().split('T')[0];
           break;
-        case 'month':
+        }
+        case 'month': {
           cohortKey = `${userDate.getFullYear()}-${String(userDate.getMonth() + 1).padStart(2, '0')}`;
           break;
-        case 'quarter':
+        }
+        case 'quarter': {
           const quarter = Math.floor(userDate.getMonth() / 3) + 1;
           cohortKey = `${userDate.getFullYear()}-Q${quarter}`;
           break;
-        default:
+        }
+        default: {
           cohortKey = userDate.toISOString().split('T')[0];
+        }
       }
       
       if (!cohorts[cohortKey]) {
@@ -146,7 +150,7 @@ const CohortAnalysis = ({ data, dateRange }) => {
               </tr>
             </thead>
             <tbody>
-              {heatmapData.map((row, index) => (
+              {heatmapData.map((row) => (
                 <tr key={row.cohort} className="border-t border-gray-100">
                   <td className="p-2 font-medium text-gray-900">{row.cohort}</td>
                   <td className="p-2 text-center text-gray-600">{row.size}</td>

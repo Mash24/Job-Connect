@@ -1,4 +1,4 @@
-/* eslint-env jest */
+/* global jest */
 
 // Mock for firebase/auth
 export const getAuth = jest.fn(() => ({

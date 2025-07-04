@@ -4,13 +4,12 @@ import {
   BarChart, LineChart, PieChart as PieChartIcon, Table, Image, 
   Text, Calendar, Filter, Database, Zap, Eye, Settings, Download
 } from 'lucide-react';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 
 const ChartLibrary = ({ onAddChart, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [dataSources, setDataSources] = useState({});
   const [loading, setLoading] = useState(true);
 
   // Fetch data sources
@@ -31,7 +30,6 @@ const ChartLibrary = ({ onAddChart, onClose }) => {
         const appsSnap = await getDocs(query(collection(db, 'applications'), limit(10)));
         sources.applications = appsSnap.docs.map(doc => doc.data());
         
-        setDataSources(sources);
       } catch (error) {
         console.error('Error fetching data sources:', error);
       } finally {
@@ -326,12 +324,8 @@ const ChartLibrary = ({ onAddChart, onClose }) => {
         {filteredCharts.map((chart) => {
           const Icon = chart.icon;
           return (
-            <motion.div
+            <div
               key={chart.type}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
               <button
                 onClick={() => handleAddChart(chart)}
@@ -351,7 +345,7 @@ const ChartLibrary = ({ onAddChart, onClose }) => {
                   </div>
                 </div>
               </button>
-            </motion.div>
+            </div>
           );
         })}
       </div>

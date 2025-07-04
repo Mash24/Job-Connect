@@ -80,7 +80,7 @@ import AdminDashboard from './AdminDashboard';
 describe('AdminDashboard Integration', () => {
   it('renders all major regions for an admin user', async () => {
     render(
-      <MemoryRouter initialEntries={["/admin/dashboard"]}>
+      <MemoryRouter initialEntries={["/admin/dashboard"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />

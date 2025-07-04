@@ -8,7 +8,6 @@ import ReportCard from '../../components/admin/reports/ReportCard';
 
 const AdminReports = () => {
   const [activeView, setActiveView] = useState('builder'); // 'builder', 'saved', 'scheduled'
-  const [selectedReport, setSelectedReport] = useState(null);
 
   const views = [
     {
@@ -93,7 +92,6 @@ const AdminReports = () => {
                 <ReportCard
                   key={report.id}
                   report={report}
-                  onSelect={() => setSelectedReport(report)}
                 />
               ))}
             </div>

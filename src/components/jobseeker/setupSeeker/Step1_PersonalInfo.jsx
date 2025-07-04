@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { auth, db } from  '../../../firebase/config'
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -59,11 +58,8 @@ const Step1_PersonalInfo = ({ onNext }) => {
 
 
   return (
-    <motion.div
+    <div
         className="max-w-2xl mx-auto bg-white shadow-lg p-8 rounded-lg"
-        initial={{ opacity: 0, y:30 }}
-        animate={{ opacity: 1, y:0 }}
-        transition={{ duration: 0.5 }}
     >
         <h2 className='text-2xl font-bold mb-6 text-blue-700'>Step 1: Personal Information</h2>
          {/* <p>Debug: Component is rendering</p>                                       Debug */}
@@ -141,7 +137,7 @@ const Step1_PersonalInfo = ({ onNext }) => {
                 </button>
             </div>
         </form>
-    </motion.div>
+    </div>
   );
 };
 

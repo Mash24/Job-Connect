@@ -1,7 +1,7 @@
 // File: /src/components/employer/setupEmployer/Step4_ReviewSubmit.jsx
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../../firebase/config';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Step4_ReviewSubmit = ({ onSubmitFinal, onBack }) => {
   const [employerData, setEmployerData] = useState(null);

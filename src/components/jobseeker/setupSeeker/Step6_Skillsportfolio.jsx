@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { auth, db } from '../../../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 import Select from 'react-select';
@@ -87,12 +86,7 @@ const Step6_Skillsportfolio = ({ onNext }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-4xl mx-auto bg-white shadow-md p-8 rounded-lg"
-    >
+    <div className="max-w-4xl mx-auto bg-white shadow-md p-8 rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-blue-700">Step 6: Skills & Portfolio</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -158,10 +152,10 @@ const Step6_Skillsportfolio = ({ onNext }) => {
           </button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 };
 
 export default Step6_Skillsportfolio;
-// This code is a React component for a job seeker's setup process, specifically the skills and portfolio step. It uses Firebase for authentication and Firestore for data storage. The component allows users to select hard and soft skills, input languages, add portfolio links, and upload files. The form is animated using Framer Motion, and it includes error handling for user authentication and data saving. The component is styled with Tailwind CSS classes.
+// This code is a React component for a job seeker's setup process, specifically the skills and portfolio step. It uses Firebase for authentication and Firestore for data storage. The component allows users to select hard and soft skills, input languages, add portfolio links, and upload files. The component is styled with Tailwind CSS classes.
 // The code also includes a button to add more portfolio links dynamically. The component is designed to be part of a multi-step setup process for job seekers.

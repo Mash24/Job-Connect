@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   TrendingUp, Calendar, Users, Briefcase, Target, 
   Zap, Eye, EyeOff, Filter, Download, RefreshCw
@@ -8,7 +8,7 @@ import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar
 } from 'recharts';
 
-const PredictiveInsights = ({ data, dateRange }) => {
+const PredictiveInsights = ({ data }) => {
   const [forecastPeriod, setForecastPeriod] = useState('90'); // 30, 60, 90 days
   const [showTrendLines, setShowTrendLines] = useState(true);
   const [selectedMetrics, setSelectedMetrics] = useState(['users', 'jobs', 'applications']);
@@ -16,13 +16,7 @@ const PredictiveInsights = ({ data, dateRange }) => {
   const [loading, setLoading] = useState(false);
 
   // Generate historical data for forecasting
-  useEffect(() => {
-    if (data.users.length > 0) {
-      generateForecastData();
-    }
-  }, [data, forecastPeriod]);
-
-  const generateForecastData = () => {
+  const generateForecastData = useCallback(() => {
     setLoading(true);
     
     // Group data by date
@@ -42,7 +36,13 @@ const PredictiveInsights = ({ data, dateRange }) => {
     });
     
     setLoading(false);
-  };
+  }, [data, forecastPeriod, calculateForecast]);
+
+  useEffect(() => {
+    if (data.users.length > 0) {
+      generateForecastData();
+    }
+  }, [data, generateForecastData]);
 
   const groupDataByDate = (items, dateField) => {
     const grouped = {};
@@ -57,60 +57,46 @@ const PredictiveInsights = ({ data, dateRange }) => {
       .sort((a, b) => new Date(a.date) - new Date(b.date));
   };
 
-  const calculateForecast = (historicalData, forecastDays) => {
+  const calculateForecast = useCallback((historicalData, forecastDays) => {
     if (historicalData.length < 2) {
       return historicalData;
     }
-
     // Calculate linear trend
     const n = historicalData.length;
     const xValues = Array.from({ length: n }, (_, i) => i);
     const yValues = historicalData.map(d => d.count);
-
     // Linear regression: y = mx + b
     const { slope, intercept } = calculateLinearRegression(xValues, yValues);
-
     // Generate forecast data
     const forecastData = [...historicalData];
     const lastDate = new Date(historicalData[historicalData.length - 1].date);
-    
     for (let i = 1; i <= forecastDays; i++) {
       const forecastDate = new Date(lastDate);
       forecastDate.setDate(forecastDate.getDate() + i);
-      
       const forecastValue = Math.max(0, slope * (n + i - 1) + intercept);
-      
       forecastData.push({
         date: forecastDate.toISOString().split('T')[0],
         count: Math.round(forecastValue),
         isForecast: true
       });
     }
-
     return forecastData;
-  };
+  }, [calculateLinearRegression]);
 
-  const calculateLinearRegression = (xValues, yValues) => {
+  const calculateLinearRegression = useCallback((xValues, yValues) => {
     const n = xValues.length;
-    
-    // Calculate means
     const xMean = xValues.reduce((sum, x) => sum + x, 0) / n;
     const yMean = yValues.reduce((sum, y) => sum + y, 0) / n;
-    
-    // Calculate slope and intercept
     let numerator = 0;
     let denominator = 0;
-    
     for (let i = 0; i < n; i++) {
       numerator += (xValues[i] - xMean) * (yValues[i] - yMean);
       denominator += (xValues[i] - xMean) ** 2;
     }
-    
     const slope = denominator !== 0 ? numerator / denominator : 0;
     const intercept = yMean - slope * xMean;
-    
     return { slope, intercept };
-  };
+  }, []);
 
   const getMetricColor = (metric) => {
     switch (metric) {

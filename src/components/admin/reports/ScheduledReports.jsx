@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   X, Plus, Calendar, Clock, Mail, Users, FileText, 
   Settings, Trash2, Play, Pause, Edit, Eye, Download,
@@ -259,9 +259,7 @@ const ScheduledReports = ({ onClose, currentAdmin }) => {
       {/* Scheduled Reports List */}
       <div className="space-y-4">
         {scheduledReports.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <div
             className="text-center py-12"
           >
             <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -276,13 +274,11 @@ const ScheduledReports = ({ onClose, currentAdmin }) => {
               <Plus className="w-4 h-4" />
               Create First Schedule
             </button>
-          </motion.div>
+          </div>
         ) : (
           scheduledReports.map((report) => (
-            <motion.div
+            <div
               key={report.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between">
@@ -360,7 +356,7 @@ const ScheduledReports = ({ onClose, currentAdmin }) => {
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))
         )}
       </div>
@@ -368,20 +364,14 @@ const ScheduledReports = ({ onClose, currentAdmin }) => {
       {/* Create/Edit Form Modal */}
       <AnimatePresence>
         {(showCreateForm || selectedReport) && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
             onClick={() => {
               setShowCreateForm(false);
               setSelectedReport(null);
             }}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+            <div
               className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
@@ -541,8 +531,8 @@ const ScheduledReports = ({ onClose, currentAdmin }) => {
                   {selectedReport ? 'Update Schedule' : 'Create Schedule'}
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
       </AnimatePresence>
     </div>

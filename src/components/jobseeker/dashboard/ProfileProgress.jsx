@@ -8,18 +8,16 @@ const ProfileProgress = () => {
   const [loading, setLoading] = useState(true);
   const [missingSteps, setMissingSteps] = useState([]);
 
-  // Define the required steps in Firestore
-  const expectedKeys = [
-    'personalInfo',
-    'location',
-    'jobPreferences',
-    'workExperience',
-    'education',
-    'skillsPortfolio',
-    'profileCompleted',
-  ];
-
   useEffect(() => {
+    const expectedKeys = [
+      'personalInfo',
+      'location',
+      'jobPreferences',
+      'workExperience',
+      'education',
+      'skillsPortfolio',
+      'profileCompleted',
+    ];
     const calculateProgress = async () => {
       try {
         const user = auth.currentUser;

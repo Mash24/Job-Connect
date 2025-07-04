@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { auth, db } from '../../../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 import DatePicker from 'react-datepicker';
@@ -9,8 +8,8 @@ import { FaPlusCircle } from 'react-icons/fa';
 const educationLevels = [
   'High School Diploma',
   'Associate Degree',
-  'Bachelor’s Degree',
-  'Master’s Degree',
+  "Bachelor's Degree",
+  "Master's Degree",
   'PhD / Doctorate',
   'Diploma / Certificate',
   'Other'
@@ -69,12 +68,7 @@ const Step5_Education = ({ onNext }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className='max-w-4xl mx-auto bg-white shadow-md p-8 rounded-lg'
-    >
+    <div className='max-w-4xl mx-auto bg-white shadow-md p-8 rounded-lg'>
       <h2 className="text-2xl font-bold mb-6 text-blue-700">Step 5: Education & Certifications</h2>
 
       <form onSubmit={handleSubmit} className='space-y-6'>
@@ -168,7 +162,7 @@ const Step5_Education = ({ onNext }) => {
           </button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 };
 

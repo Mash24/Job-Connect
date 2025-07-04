@@ -1,8 +1,8 @@
 // File: /src/pages/admin/AdminJobs.jsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   Briefcase, Filter, Search, Download, Plus, 
   TrendingUp, MapPin, DollarSign, Calendar, 
@@ -11,7 +11,7 @@ import {
   Copy, ExternalLink, Tag, Building, UserCheck
 } from 'lucide-react';
 import { auth, db } from '../../firebase/config';
-import { collection, getDocs, query, where, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, updateDoc, doc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 
 import JobTable from '../../components/admin/tables/JobTable';
 
@@ -83,39 +83,7 @@ const AdminJobs = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [copiedJobId, setCopiedJobId] = useState(null);
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const user = auth.currentUser;
-      if (!user) return navigate('/login');
-
-      try {
-        const userDoc = await getDocs(query(collection(db, 'users')));
-        const adminDoc = userDoc.docs.find(doc => doc.id === user.uid);
-        if (adminDoc?.data()?.role === 'super-admin') {
-          setIsAdmin(true);
-        } else {
-          navigate('/login');
-        }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        navigate('/login');
-      }
-    };
-
-    checkAdmin();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (isAdmin) {
-      fetchJobs();
-    }
-  }, [isAdmin]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, jobs]);
-
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
       const q = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'));
@@ -140,9 +108,9 @@ const AdminJobs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const calculateJobStats = (jobList) => {
+  const calculateJobStats = useCallback((jobList) => {
     const uniqueEmployers = new Set(jobList.map(job => job.employerId || job.company)).size;
     const stats = {
       total: jobList.length,
@@ -157,9 +125,9 @@ const AdminJobs = () => {
       highPriority: jobList.filter(job => job.priority === 'high').length
     };
     setJobStats(stats);
-  };
+  }, []);
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...jobs];
 
     // Status filter
@@ -232,7 +200,7 @@ const AdminJobs = () => {
     }
 
     setFilteredJobs(filtered);
-  };
+  }, [jobs, filters]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -656,6 +624,38 @@ const AdminJobs = () => {
       )}
     </AnimatePresence>
   );
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const user = auth.currentUser;
+      if (!user) return navigate('/login');
+
+      try {
+        const userDoc = await getDocs(query(collection(db, 'users')));
+        const adminDoc = userDoc.docs.find(doc => doc.id === user.uid);
+        if (adminDoc?.data()?.role === 'super-admin') {
+          setIsAdmin(true);
+        } else {
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        navigate('/login');
+      }
+    };
+
+    checkAdmin();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchJobs();
+    }
+  }, [isAdmin, fetchJobs]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   if (!isAdmin) return null;
 

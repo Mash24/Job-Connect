@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { auth, db } from '../../../firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 import { FaBullseye, FaHeart, FaPlusCircle, FaTrash } from 'react-icons/fa';
@@ -43,10 +42,7 @@ const Step3_CompanyCulture = ({ onNext, onBack }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <div
       className="bg-white p-8 rounded-2xl shadow-lg border max-w-2xl mx-auto"
     >
       <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
@@ -121,7 +117,7 @@ const Step3_CompanyCulture = ({ onNext, onBack }) => {
           {loading ? 'Saving...' : 'Save & Continue →'}
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

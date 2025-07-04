@@ -9,7 +9,7 @@ import {
   PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 
-const MarketIntelligence = ({ data, dateRange }) => {
+const MarketIntelligence = ({ data }) => {
   const [marketData, setMarketData] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -253,7 +253,7 @@ const MarketIntelligence = ({ data, dateRange }) => {
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px'
               }}
-              formatter={(value, name) => [value, 'Jobs']}
+              formatter={(value) => [value, 'Jobs']}
             />
             <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} />
           </BarChart>

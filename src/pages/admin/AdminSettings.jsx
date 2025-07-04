@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   Settings, Loader2, CheckCircle2, Save, Shield, 
   Bell, Globe, Users, Database, 
@@ -17,7 +17,6 @@ const AdminSettings = () => {
   const [errorField, setErrorField] = useState(null);
   const [activeTab, setActiveTab] = useState('general');
   const [maintenanceTime, setMaintenanceTime] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const docRef = doc(db, 'settings', 'global');
 
@@ -83,7 +82,7 @@ const AdminSettings = () => {
       }
     };
     fetchSettings();
-  }, []);
+  }, [docRef]);
 
   const updateField = async (field, value) => {
     setSavingField(field);
@@ -615,11 +614,7 @@ const AdminSettings = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">⚙️ Admin Settings</h1>
@@ -659,34 +654,24 @@ const AdminSettings = () => {
               })}
             </nav>
           </div>
-        </motion.div>
+        </div>
 
         {/* Content */}
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-        >
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           {activeTab === 'general' && renderGeneralSettings()}
           {activeTab === 'security' && renderSecuritySettings()}
           {activeTab === 'notifications' && renderNotificationSettings()}
           {activeTab === 'appearance' && renderAppearanceSettings()}
           {activeTab === 'performance' && renderPerformanceSettings()}
           {activeTab === 'backup' && renderBackupSettings()}
-        </motion.div>
+        </div>
 
         {/* Status */}
         {savingField === null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-4 flex items-center gap-2 text-sm text-green-600"
-          >
+          <div className="mt-4 flex items-center gap-2 text-sm text-green-600">
             <CheckCircle2 className="w-4 h-4" />
             All changes saved automatically
-          </motion.div>
+          </div>
         )}
       </div>
     </div>

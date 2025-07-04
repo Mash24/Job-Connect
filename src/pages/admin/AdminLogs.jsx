@@ -1,14 +1,14 @@
 // File: src/pages/admin/AdminLogs.jsx
 
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState, useCallback } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { 
   FileText, Filter, Search, Download, RefreshCw, 
   AlertTriangle, Info, CheckCircle, XCircle, Clock,
   User, Briefcase, Settings, Shield, Globe, Activity,
   Eye, Trash2, Archive, Bell
 } from 'lucide-react';
-import { collection, onSnapshot, query, orderBy, limit, where } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
 const AdminLogs = () => {
@@ -29,7 +29,6 @@ const AdminLogs = () => {
     info: 0,
     success: 0
   });
-  const [selectedLogs, setSelectedLogs] = useState(new Set());
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [logLimit, setLogLimit] = useState(100);
 
@@ -59,7 +58,7 @@ const AdminLogs = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [filters, logs]);
+  }, [applyFilters]);
 
   const calculateLogStats = (logList) => {
     const stats = {
@@ -72,7 +71,7 @@ const AdminLogs = () => {
     setLogStats(stats);
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...logs];
 
     // Level filter
@@ -114,7 +113,7 @@ const AdminLogs = () => {
     }
 
     setFilteredLogs(filtered);
-  };
+  }, [filters, logs]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -227,9 +226,7 @@ const AdminLogs = () => {
 
   const renderStatsCards = () => (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -241,12 +238,9 @@ const AdminLogs = () => {
             <FileText className="w-5 h-5 text-gray-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -258,12 +252,9 @@ const AdminLogs = () => {
             <XCircle className="w-5 h-5 text-red-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -275,12 +266,9 @@ const AdminLogs = () => {
             <AlertTriangle className="w-5 h-5 text-yellow-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -292,12 +280,9 @@ const AdminLogs = () => {
             <Info className="w-5 h-5 text-blue-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -309,7 +294,7 @@ const AdminLogs = () => {
             <CheckCircle className="w-5 h-5 text-green-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 
@@ -461,9 +446,7 @@ const AdminLogs = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-6">
@@ -491,7 +474,7 @@ const AdminLogs = () => {
 
           {/* Controls */}
           {renderControls()}
-        </motion.div>
+        </div>
 
         {/* Logs List */}
         {loading ? (
@@ -509,12 +492,9 @@ const AdminLogs = () => {
               </div>
             ) : (
               <AnimatePresence>
-                {filteredLogs.map((log, index) => (
-                  <motion.div
+                {filteredLogs.map((log) => (
+                  <div
                     key={log.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
                     className={`bg-white rounded-lg shadow-sm border p-4 ${getLevelColor(log.level)}`}
                   >
                     <div className="flex items-start justify-between">
@@ -574,7 +554,7 @@ const AdminLogs = () => {
                         </button>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </AnimatePresence>
             )}

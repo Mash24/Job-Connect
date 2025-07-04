@@ -1,4 +1,4 @@
-/* eslint-env jest */
+/* global jest */
 
 // Mock for firebase/analytics
 export const getAnalytics = jest.fn(() => ({}));

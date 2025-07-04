@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../../../firebase/config'; // Adjust the import path as necessary
 import { doc, getDoc } from 'firebase/firestore';
-import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
 const UserWelcomeBanner = () => {
@@ -28,11 +27,8 @@ const UserWelcomeBanner = () => {
   }, []);
 
   return (
-    <motion.div 
+    <div 
       className="relative bg-gradient-to-br from-blue-400 to-indigo-500 text-white p-8 rounded-2xl shadow-lg overflow-hidden"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
     >
       <div className="absolute -top-6 -left-6 opacity-20">
         <Sparkles size={100} strokeWidth={0.8} />
@@ -41,9 +37,9 @@ const UserWelcomeBanner = () => {
         Welcome back{firstName ? `, ${firstName}` : ''} 👋
       </h2>
       <p className="text-sm mt-2 opacity-90">
-        Here’s what’s happening with your profile today.
+        Here's what's happening with your profile today.
       </p>
-    </motion.div>
+    </div>
   );
 };
 

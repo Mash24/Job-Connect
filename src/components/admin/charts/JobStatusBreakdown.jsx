@@ -18,12 +18,12 @@ const JobStatusBreakdown = () => {
       const statusCounts = { approved: 0, pending: 0, rejected: 0 };
       snapshot.docs.forEach(doc => {
         const job = doc.data();
-        if (job.status && statusCounts.hasOwnProperty(job.status)) {
+        if (job.status && Object.prototype.hasOwnProperty.call(statusCounts, job.status)) {
           statusCounts[job.status] += 1;
         }
       });
       const chartData = Object.entries(statusCounts)
-        .map(([status, count]) => ({ status, count }))
+        .map(([, count]) => ({ status: Object.keys(statusCounts)[Object.values(statusCounts).indexOf(count)], count }))
         .filter(item => item.count > 0);
       setData(chartData);
       setLoading(false);
@@ -84,7 +84,7 @@ const JobStatusBreakdown = () => {
               labelLine={false}
               isAnimationActive={true}
             >
-              {data.map((entry, idx) => (
+              {data.map((entry) => (
                 <Cell key={`cell-${entry.status}`} fill={STATUS_COLORS[entry.status] || '#8884d8'} />
               ))}
             </Pie>

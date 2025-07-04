@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   Megaphone, Loader2, Trash2, Plus, Edit, Eye, 
   Calendar, Users, Target, Bell, Clock, CheckCircle,
@@ -16,7 +16,6 @@ import {
   doc,
   query,
   orderBy,
-  where
 } from 'firebase/firestore';
 import { db, auth } from '../../firebase/config';
 import { toast } from 'react-toastify';
@@ -26,7 +25,6 @@ const AdminAnnouncements = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   
@@ -60,10 +58,6 @@ const AdminAnnouncements = () => {
   });
 
   useEffect(() => {
-    setCurrentUser(auth.currentUser);
-  }, []);
-
-  useEffect(() => {
     const q = query(
       collection(db, 'announcements'),
       orderBy('timestamp', 'desc')
@@ -84,7 +78,7 @@ const AdminAnnouncements = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [filters, announcements]);
+  }, [filters, announcements, applyFilters]);
 
   const calculateStats = (announcementList) => {
     const now = new Date();
@@ -313,9 +307,7 @@ const AdminAnnouncements = () => {
 
   const renderStatsCards = () => (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -327,12 +319,9 @@ const AdminAnnouncements = () => {
             <Megaphone className="w-5 h-5 text-gray-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -344,12 +333,9 @@ const AdminAnnouncements = () => {
             <CheckCircle className="w-5 h-5 text-green-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -361,12 +347,9 @@ const AdminAnnouncements = () => {
             <Calendar className="w-5 h-5 text-blue-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -378,12 +361,9 @@ const AdminAnnouncements = () => {
             <Clock className="w-5 h-5 text-red-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between">
@@ -395,7 +375,7 @@ const AdminAnnouncements = () => {
             <AlertTriangle className="w-5 h-5 text-orange-600" />
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 
@@ -498,10 +478,7 @@ const AdminAnnouncements = () => {
   );
 
   const renderForm = () => (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
+    <div
       className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6"
     >
       <div className="flex items-center justify-between mb-4">
@@ -625,16 +602,14 @@ const AdminAnnouncements = () => {
           </button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-6">
@@ -666,7 +641,7 @@ const AdminAnnouncements = () => {
 
           {/* Filters */}
           {renderFilters()}
-        </motion.div>
+        </div>
 
         {/* Form */}
         <AnimatePresence>
@@ -684,11 +659,8 @@ const AdminAnnouncements = () => {
           ) : (
             <AnimatePresence>
               {filteredAnnouncements.map((announcement, index) => (
-                <motion.div
+                <div
                   key={announcement.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
                   className={`bg-white rounded-lg shadow-sm border p-6 ${getPriorityColor(announcement.priority)}`}
                 >
                   <div className="flex items-start justify-between">
@@ -747,7 +719,7 @@ const AdminAnnouncements = () => {
                       </button>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </AnimatePresence>
           )}

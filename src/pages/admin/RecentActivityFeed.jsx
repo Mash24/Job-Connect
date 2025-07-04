@@ -11,14 +11,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { 
   Loader2, Filter, Search, Clock, User, Briefcase, 
   FileText, Settings, Shield, MessageSquare, AlertTriangle,
-  Eye, MoreHorizontal, RefreshCw, Calendar
+  Eye, RefreshCw
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 /**
  * @constant {Object} typeIcons
@@ -44,36 +44,6 @@ const priorityColors = {
   medium: 'border-l-yellow-500 bg-yellow-50',
   low: 'border-l-green-500 bg-green-50',
   info: 'border-l-blue-500 bg-blue-50'
-};
-
-/**
- * @function formatTimeAgo
- * @description Enhanced time formatting with more precise relative time display
- * @param {Object} timestamp - Firestore timestamp object
- * @returns {string} Formatted time string (e.g., "2m ago", "1h ago", "3d ago")
- */
-const formatTimeAgo = (timestamp) => {
-  if (!timestamp?.seconds) return 'Just now';
-  
-  const now = Date.now();
-  const timestampMs = timestamp.seconds * 1000;
-  const diffMs = now - timestampMs;
-  const diffSeconds = Math.floor(diffMs / 1000);
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffSeconds < 60) return `${diffSeconds}s ago`;
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  
-  const date = new Date(timestampMs);
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric',
-    year: diffDays > 365 ? 'numeric' : undefined
-  });
 };
 
 /**
@@ -110,7 +80,6 @@ const RecentActivityFeed = () => {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState(Date.now());
 
   useEffect(() => {
     /**
@@ -151,7 +120,6 @@ const RecentActivityFeed = () => {
   });
 
   const handleRefresh = () => {
-    setLastRefresh(Date.now());
     setLoading(true);
     // The real-time listener will automatically update the data
   };
@@ -161,11 +129,7 @@ const RecentActivityFeed = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
-    >
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
         <div className="flex items-center justify-between mb-4">
@@ -213,12 +177,7 @@ const RecentActivityFeed = () => {
       {/* Filters */}
       <AnimatePresence>
         {showFilters && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="border-b border-gray-200 bg-gray-50"
-          >
+          <div className="border-b border-gray-200 bg-gray-50">
             <div className="p-4">
               <div className="flex flex-wrap gap-2">
                 {[
@@ -247,7 +206,7 @@ const RecentActivityFeed = () => {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
@@ -275,84 +234,31 @@ const RecentActivityFeed = () => {
             <AnimatePresence>
               {filteredLogs.map((log, index) => {
                 const typeConfig = typeIcons[log.type] || typeIcons.system;
-                const Icon = typeConfig.icon;
                 const priorityClass = priorityColors[log.priority] || priorityColors.info;
                 
                 return (
-                  <motion.div
+                  <div
                     key={log.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
                     className={`p-4 hover:bg-gray-50 transition-colors border-l-4 ${priorityClass}`}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`p-2 rounded-lg ${typeConfig.bg}`}>
-                        <Icon className={`w-4 h-4 ${typeConfig.color}`} />
+                        <typeConfig.icon className={`w-4 h-4 ${typeConfig.color}`} />
                       </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <p className="text-sm text-gray-900 font-medium">
-                              {log.performedBy || 'System'} 
-                              <span className="font-normal text-gray-600"> {log.action}</span>
-                              {log.target && (
-                                <span className="text-gray-500"> {log.target}</span>
-                              )}
-                            </p>
-                            
-                            {log.details && (
-                              <p className="text-xs text-gray-500 mt-1">{log.details}</p>
-                            )}
-                            
-                            <div className="flex items-center gap-4 mt-2">
-                              <div className="flex items-center gap-1 text-xs text-gray-400">
-                                <Calendar className="w-3 h-3" />
-                                {formatTimeAgo(log.timestamp)}
-                              </div>
-                              
-                              {log.type && (
-                                <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full capitalize">
-                                  {log.type}
-                                </span>
-                              )}
-                              
-                              {log.priority && log.priority !== 'low' && (
-                                <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${
-                                  log.priority === 'high' ? 'bg-red-100 text-red-600' :
-                                  log.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-                                  'bg-blue-100 text-blue-600'
-                                }`}>
-                                  {log.priority}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <button className="p-1 hover:bg-gray-200 rounded transition-colors">
-                            <MoreHorizontal className="w-4 h-4 text-gray-400" />
-                          </button>
-                        </div>
+                      <div>
+                        <p className="text-sm font-medium leading-6 text-gray-900">{log.action}</p>
+                        <p className="text-xs leading-5 font-medium text-gray-500">{log.performedBy} {log.target && `to ${log.target}`}</p>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </AnimatePresence>
           </div>
         )}
       </div>
-
-      {/* Footer */}
-      <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>Showing {filteredLogs.length} of {logs.length} activities</span>
-          <span>Last updated: {formatTimeAgo({ seconds: lastRefresh / 1000 })}</span>
-        </div>
-      </div>
-    </motion.div>
+    </div>
   );
 };
 
-export default RecentActivityFeed; 
+export default RecentActivityFeed;

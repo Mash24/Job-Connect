@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, limit, getDocs, onSnapshot, addDoc, updateDoc, doc, serverTimestamp, where } from 'firebase/firestore';
 import { db, auth } from '../../../firebase/config';
-import { Bell, BellOff, Settings, Filter, Check, X, AlertTriangle, Info, XCircle, Mail, MessageSquare, Zap } from 'lucide-react';
+import { Bell, Settings, Filter, Check, X, AlertTriangle, Info, XCircle, Mail, MessageSquare, Zap } from 'lucide-react';
 
 import NotificationPanel from './NotificationPanel';
 import NotificationSettings from './NotificationSettings';
@@ -87,9 +87,39 @@ const AdminNotificationsSystem = () => {
     fetchNotifications();
   }, []);
 
-  // Simulate real-time alerts
+  // Move this to the top level:
+  const createNotification = useCallback(async (alert) => {
+    if (!currentAdmin) return;
+    try {
+      const notification = {
+        title: alert.title,
+        message: alert.message,
+        severity: alert.severity,
+        type: alert.type,
+        timestamp: serverTimestamp(),
+        read: false,
+        adminId: currentAdmin.id,
+        adminEmail: currentAdmin.email,
+        adminRole: currentAdmin.role,
+        metadata: {
+          source: 'system-monitoring',
+          alertId: alert.id
+        }
+      };
+      await addDoc(collection(db, 'notifications'), notification);
+      if (alert.severity === 'critical') {
+        setSystemStatus('critical');
+      } else if (alert.severity === 'warning' && systemStatus === 'healthy') {
+        setSystemStatus('warning');
+      }
+    } catch (error) {
+      console.error('Error creating notification:', error);
+    }
+  }, [currentAdmin, setSystemStatus, systemStatus]);
+
+  // In useEffect, replace useCallback with a regular function:
   useEffect(() => {
-    const simulateAlerts = () => {
+    function simulateAlerts() {
       const alertTypes = [
         {
           id: 'api-error',
@@ -116,54 +146,15 @@ const AdminNotificationsSystem = () => {
           timestamp: new Date()
         }
       ];
-
-      // Randomly add alerts
       if (Math.random() > 0.7) {
         const randomAlert = alertTypes[Math.floor(Math.random() * alertTypes.length)];
         setActiveAlerts(prev => [randomAlert, ...prev.slice(0, 4)]);
-        
-        // Create notification
         createNotification(randomAlert);
       }
-    };
-
-    const interval = setInterval(simulateAlerts, 30000); // Every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  // Create notification
-  const createNotification = async (alert) => {
-    if (!currentAdmin) return;
-
-    try {
-      const notification = {
-        title: alert.title,
-        message: alert.message,
-        severity: alert.severity,
-        type: alert.type,
-        timestamp: serverTimestamp(),
-        read: false,
-        adminId: currentAdmin.id,
-        adminEmail: currentAdmin.email,
-        adminRole: currentAdmin.role,
-        metadata: {
-          source: 'system-monitoring',
-          alertId: alert.id
-        }
-      };
-
-      await addDoc(collection(db, 'notifications'), notification);
-
-      // Update system status based on alert severity
-      if (alert.severity === 'critical') {
-        setSystemStatus('critical');
-      } else if (alert.severity === 'warning' && systemStatus === 'healthy') {
-        setSystemStatus('warning');
-      }
-    } catch (error) {
-      console.error('Error creating notification:', error);
     }
-  };
+    const interval = setInterval(simulateAlerts, 30000);
+    return () => clearInterval(interval);
+  }, [createNotification]);
 
   // Mark notification as read
   const markAsRead = async (notificationId) => {

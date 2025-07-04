@@ -1,4 +1,4 @@
-/* eslint-env jest */
+/* global jest */
 
 // Mock for firebase/app
 export const initializeApp = jest.fn(() => ({

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Bell, Mail, MessageSquare, X, Save, AlertTriangle, Info, XCircle, Zap } from 'lucide-react';
+import { Settings, Bell, Mail, MessageSquare, X, AlertTriangle, Info, XCircle, Zap } from 'lucide-react';
 
 const NotificationSettings = ({ settings, onSettingsChange, onClose, currentAdmin }) => {
   const [localSettings, setLocalSettings] = useState(settings);

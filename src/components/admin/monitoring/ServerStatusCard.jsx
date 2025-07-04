@@ -58,7 +58,7 @@ const ServerStatusCard = ({ isLiveMode }) => {
   };
 
   const MetricItem = ({ icon: Icon, label, value, unit = '%' }) => (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-white rounded-lg shadow-sm">
           <Icon className="w-5 h-5 text-gray-600" />
@@ -74,7 +74,7 @@ const ServerStatusCard = ({ isLiveMode }) => {
           <p className={`text-lg font-bold ${getMetricColor(value)}`}>{Math.round(value)}{unit}</p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 
   return (

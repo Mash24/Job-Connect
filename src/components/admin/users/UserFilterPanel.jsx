@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { Filter, Save, X, Search, MapPin, Calendar, User, Briefcase, Shield, CheckCircle, XCircle } from 'lucide-react';
 
 const UserFilterPanel = ({ filters, onFilterChange, savedFilters, onSavePreset, onLoadPreset }) => {

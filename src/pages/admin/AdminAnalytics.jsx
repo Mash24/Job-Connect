@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
   BarChart3, Users, Briefcase, Target, Activity,
   TrendingUp, Brain, Users as UsersIcon, Globe,
@@ -64,27 +64,7 @@ const AdminAnalytics = () => {
     }
   ];
 
-  useEffect(() => {
-    const checkAdminAndFetchData = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      try {
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists() && userDoc.data().role === 'super-admin') {
-          await fetchAnalyticsData();
-        }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAdminAndFetchData();
-  }, [dateRange]);
-
-  const fetchAnalyticsData = async () => {
+  const fetchAnalyticsData = useCallback(async () => {
     try {
       const now = new Date();
       const startDate = new Date(now.getTime() - (parseInt(dateRange) * 24 * 60 * 60 * 1000));
@@ -140,7 +120,27 @@ const AdminAnalytics = () => {
     } catch (error) {
       console.error('Error fetching analytics data:', error);
     }
-  };
+  }, [dateRange]);
+
+  useEffect(() => {
+    const checkAdminAndFetchData = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists() && userDoc.data().role === 'super-admin') {
+          await fetchAnalyticsData();
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAdminAndFetchData();
+  }, [dateRange, fetchAnalyticsData]);
 
   const calculateMetrics = (users, jobs, applications, range) => {
     const now = new Date();

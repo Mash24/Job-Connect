@@ -16,23 +16,6 @@ const SetupEmployer = () => {
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
 
-  // Step 2: Save company location to Firestore
-  const handleLocationSave = async (location) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) throw new Error('User not logged in');
-
-      const ref = doc(db, 'employers', user.uid);
-      await setDoc(ref, { location }, { merge: true });
-
-      console.log('📍 Location saved');
-      handleNext(); // Go to next step
-    } catch (err) {
-      console.error('❌ Location Save Error:', err);
-      alert('Could not save location. Try again.');
-    }
-  };
-
   // Step 4: Final submit
   const handleFinalSubmit = async () => {
     try {

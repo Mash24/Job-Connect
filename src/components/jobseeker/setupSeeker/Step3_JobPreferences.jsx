@@ -1,5 +1,4 @@
 import React, { useState} from 'react'
-import { motion } from 'framer-motion'
 import { auth, db } from '../../../firebase/config'
 import { doc, setDoc } from 'firebase/firestore'
 import Select from 'react-select';
@@ -89,10 +88,7 @@ const Step3_JobPreferences = ({ onNext}) => {
   };
 
   return (
-    <motion.div className='max-w-3xl mx-auto bg-white shadow-md p-8 rounded-lg'
-      initial={{ opacity: 0, y: 30 }}
-      animate= {{opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <div className='max-w-3xl mx-auto bg-white shadow-md p-8 rounded-lg'
     >
       <h2 className="text-2xl font-bold mb-6 text-blue-700">Step 3: Job Preferences</h2>
       <form onSubmit={handleSubmit} className='space-y-4'>
@@ -233,7 +229,7 @@ const Step3_JobPreferences = ({ onNext}) => {
         </div>
 
       </form>
-    </motion.div>
+    </div>
   );
 };
 

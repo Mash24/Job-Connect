@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, where, orderBy, limit, startAfter, updateDoc, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import React, { useState, useEffect, useCallback } from 'react';
+import { collection, getDocs, query, orderBy, limit, startAfter, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../../../firebase/config';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Filter, Download, Send, CheckCircle, XCircle, RefreshCw, FileText } from 'lucide-react';
 
 import UserFilterPanel from './UserFilterPanel';
@@ -28,7 +27,6 @@ const AdminUsersAdvanced = () => {
     lastDoc: null
   });
   const [hoveredUser, setHoveredUser] = useState(null);
-  const [currentAdminRole, setCurrentAdminRole] = useState('super-admin');
   const [savedFilters, setSavedFilters] = useState([
     { name: 'Top Employers', filters: { role: 'employer', status: 'active' }, role: 'super-admin' },
     { name: 'New Users', filters: { dateRange: '7days' }, role: 'super-admin' },
@@ -38,7 +36,7 @@ const AdminUsersAdvanced = () => {
   ]);
 
   // Fetch users with pagination
-  const fetchUsers = async (isInitial = false) => {
+  const fetchUsers = useCallback(async (isInitial = false) => {
     try {
       setLoading(true);
       let q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(pagination.pageSize));
@@ -66,7 +64,7 @@ const AdminUsersAdvanced = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.pageSize, pagination.lastDoc]);
 
   // Apply filters
   const applyFilters = (userList, filterSettings) => {
@@ -133,7 +131,7 @@ const AdminUsersAdvanced = () => {
     const newPreset = { 
       name, 
       filters: { ...filters },
-      role: currentAdminRole 
+      role: 'super-admin' 
     };
     setSavedFilters(prev => [...prev, newPreset]);
   };
@@ -206,7 +204,6 @@ const AdminUsersAdvanced = () => {
 
       selectedUserIds.forEach(userId => {
         const userRef = doc(db, 'users', userId);
-        const user = users.find(u => u.id === userId);
         
         switch (action) {
           case 'approve':
@@ -275,14 +272,14 @@ const AdminUsersAdvanced = () => {
   // Get role-based saved filters
   const getRoleBasedFilters = () => {
     return savedFilters.filter(preset => 
-      preset.role === currentAdminRole || preset.role === 'super-admin'
+      preset.role === 'super-admin'
     );
   };
 
   // Initial load
   useEffect(() => {
     fetchUsers(true);
-  }, []);
+  }, [fetchUsers]);
 
   // Apply filters when users or filters change
   useEffect(() => {
@@ -294,49 +291,39 @@ const AdminUsersAdvanced = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <Users className="w-8 h-8 text-blue-600" />
-                Advanced User Management
-              </h1>
-              <p className="mt-2 text-gray-600">
-                Manage users with advanced filtering, bulk actions, and real-time updates
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => fetchUsers(true)}
-                disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
-              </button>
-              <button
-                onClick={exportToCSV}
-                disabled={filteredUsers.length === 0}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                <FileText className="w-4 h-4" />
-                Export CSV
-              </button>
-            </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <Users className="w-8 h-8 text-blue-600" />
+              Advanced User Management
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Manage users with advanced filtering, bulk actions, and real-time updates
+            </p>
           </div>
-        </motion.div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => fetchUsers(true)}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            <button
+              onClick={exportToCSV}
+              disabled={filteredUsers.length === 0}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+            >
+              <FileText className="w-4 h-4" />
+              Export CSV
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Filter Panel */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-1"
-          >
+          <div className="lg:col-span-1">
             <UserFilterPanel
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -344,32 +331,23 @@ const AdminUsersAdvanced = () => {
               onSavePreset={saveFilterPreset}
               onLoadPreset={loadFilterPreset}
             />
-          </motion.div>
+          </div>
 
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
             {/* Bulk Actions */}
-            <AnimatePresence>
-              {selectedUsers.size > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
-                  <UserBulkActions
-                    selectedCount={selectedUsers.size}
-                    onBulkAction={handleBulkAction}
-                    onClearSelection={() => setSelectedUsers(new Set())}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {selectedUsers.size > 0 && (
+              <div>
+                <UserBulkActions
+                  selectedCount={selectedUsers.size}
+                  onBulkAction={handleBulkAction}
+                  onClearSelection={() => setSelectedUsers(new Set())}
+                />
+              </div>
+            )}
 
             {/* User Table */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
+            <div>
               <UserListTable
                 users={filteredUsers}
                 selectedUsers={selectedUsers}
@@ -381,27 +359,22 @@ const AdminUsersAdvanced = () => {
                 hasMore={pagination.hasMore}
                 filters={filters}
               />
-            </motion.div>
+            </div>
           </div>
         </div>
 
         {/* Hover Card */}
-        <AnimatePresence>
-          {hoveredUser && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed z-50"
-              style={{
-                left: hoveredUser.x + 10,
-                top: hoveredUser.y - 10
-              }}
-            >
-              <UserProfileHoverCard user={hoveredUser.user} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {hoveredUser && (
+          <div
+            className="fixed z-50"
+            style={{
+              left: hoveredUser.x + 10,
+              top: hoveredUser.y - 10
+            }}
+          >
+            <UserProfileHoverCard user={hoveredUser.user} />
+          </div>
+        )}
       </div>
     </div>
   );

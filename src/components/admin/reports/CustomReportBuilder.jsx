@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy, limit, addDoc, serverTimestamp, where } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, addDoc, serverTimestamp, where } from 'firebase/firestore';
 import { db, auth } from '../../../firebase/config';
 import { 
   BarChart3, PieChart, TrendingUp, Users, Briefcase, FileText, Download, 
@@ -236,11 +236,7 @@ const CustomReportBuilder = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
@@ -302,16 +298,13 @@ const CustomReportBuilder = () => {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* Chart Library */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Chart Library</h3>
@@ -341,14 +334,10 @@ const CustomReportBuilder = () => {
                   })}
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Saved Reports */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Saved Reports</h3>
@@ -379,14 +368,10 @@ const CustomReportBuilder = () => {
                   )}
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Data Source */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
+            <div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Source</h3>
                 <select
@@ -400,15 +385,12 @@ const CustomReportBuilder = () => {
                   <option value="analytics">Analytics</option>
                 </select>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Main Canvas */}
           <div className="lg:col-span-3">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
+            <div>
               <ReportCanvas
                 reportData={reportData}
                 isEditing={isEditing}
@@ -418,105 +400,55 @@ const CustomReportBuilder = () => {
                 onChartRemove={removeChart}
                 onReportUpdate={setReportData}
               />
-            </motion.div>
+            </div>
           </div>
         </div>
 
         {/* Modals */}
-        <AnimatePresence>
-          {showChartLibrary && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-              onClick={() => setShowChartLibrary(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-lg p-6 w-4/5 max-w-4xl max-h-[80vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ChartLibrary
-                  onAddChart={addChart}
-                  onClose={() => setShowChartLibrary(false)}
-                />
-              </motion.div>
-            </motion.div>
-          )}
+        {showChartLibrary && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowChartLibrary(false)}>
+            <div className="bg-white rounded-lg p-6 w-4/5 max-w-4xl max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <ChartLibrary
+                onAddChart={addChart}
+                onClose={() => setShowChartLibrary(false)}
+              />
+            </div>
+          </div>
+        )}
 
-          {showSettings && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-              onClick={() => setShowSettings(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-lg p-6 w-96 max-w-md"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ReportSettings
-                  reportData={reportData}
-                  onUpdate={setReportData}
-                  onClose={() => setShowSettings(false)}
-                />
-              </motion.div>
-            </motion.div>
-          )}
+        {showSettings && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
+            <div className="bg-white rounded-lg p-6 w-96 max-w-md" onClick={(e) => e.stopPropagation()}>
+              <ReportSettings
+                reportData={reportData}
+                onUpdate={setReportData}
+                onClose={() => setShowSettings(false)}
+              />
+            </div>
+          </div>
+        )}
 
-          {showExport && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-              onClick={() => setShowExport(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-lg p-6 w-96 max-w-md"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ExportPanel
-                  onExport={exportReport}
-                  onClose={() => setShowExport(false)}
-                />
-              </motion.div>
-            </motion.div>
-          )}
+        {showExport && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowExport(false)}>
+            <div className="bg-white rounded-lg p-6 w-96 max-w-md" onClick={(e) => e.stopPropagation()}>
+              <ExportPanel
+                onExport={exportReport}
+                onClose={() => setShowExport(false)}
+              />
+            </div>
+          </div>
+        )}
 
-          {showScheduled && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-              onClick={() => setShowScheduled(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-lg p-6 w-4/5 max-w-4xl max-h-[80vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ScheduledReports
-                  onClose={() => setShowScheduled(false)}
-                  currentAdmin={currentAdmin}
-                />
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {showScheduled && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowScheduled(false)}>
+            <div className="bg-white rounded-lg p-6 w-4/5 max-w-4xl max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <ScheduledReports
+                onClose={() => setShowScheduled(false)}
+                currentAdmin={currentAdmin}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

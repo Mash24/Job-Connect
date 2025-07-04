@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { 
   Users, Briefcase, Target, Activity, 
   AlertTriangle, CheckCircle, Clock, Zap, BarChart3,
@@ -8,7 +7,7 @@ import {
   MessageSquare, FileText, Shield, Globe, DollarSign
 } from 'lucide-react';
 import { auth, db } from '../../firebase/config';
-import { doc, getDoc, collection, getDocs, query, orderBy, limit, where } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 
 import ApplicationsOverTime from '../../components/admin/charts/ApplicationsOverTime';
 // import UserSignupsOverTime from '../../components/admin/charts/UserSignupsOverTime';
@@ -39,40 +38,7 @@ const AdminDashboard = () => {
     errorRate: '0.1%'
   });
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const user = auth.currentUser;
-      if (!user) {
-        navigate('/login');
-        return;
-      }
-
-      try {
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists() && userDoc.data().role === 'super-admin') {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        setIsAdmin(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAdmin();
-  }, [navigate]);
-
-  // Fetch dashboard data
-  useEffect(() => {
-    if (isAdmin) {
-      fetchDashboardData();
-    }
-  }, [isAdmin, selectedTimeframe]);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       const now = new Date();
       const startDate = new Date(now.getTime() - (parseInt(selectedTimeframe) * 24 * 60 * 60 * 1000));
@@ -135,7 +101,40 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
-  };
+  }, [selectedTimeframe]);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists() && userDoc.data().role === 'super-admin') {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAdmin();
+  }, [navigate]);
+
+  // Fetch dashboard data
+  useEffect(() => {
+    if (isAdmin) {
+      fetchDashboardData();
+    }
+  }, [isAdmin, selectedTimeframe, fetchDashboardData]);
 
   const calculateMetrics = (users, jobs, applications, timeframe) => {
     const now = new Date();
@@ -181,7 +180,7 @@ const AdminDashboard = () => {
     };
   };
 
-  const generateAlerts = (users, jobs, applications) => {
+  const generateAlerts = useCallback((users, jobs, applications) => {
     const alerts = [];
     
     // Check for inactive jobs
@@ -211,7 +210,7 @@ const AdminDashboard = () => {
     }
 
     return alerts;
-  };
+  }, [navigate]);
 
   const getGrowthIcon = (growth) => {
     if (growth > 0) return <ArrowUpRight className="w-4 h-4 text-green-600" />;

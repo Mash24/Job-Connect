@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, orderBy, limit, getDocs, onSnapshot } from 'firebase/firestore';
+import { AnimatePresence } from 'framer-motion';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { Activity, Server, Database, Zap, AlertTriangle, TrendingUp, Clock, Wifi, WifiOff } from 'lucide-react';
 
@@ -13,7 +13,6 @@ const SystemHealthDashboard = () => {
   const [isLiveMode, setIsLiveMode] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [systemStatus, setSystemStatus] = useState('healthy'); // healthy, warning, critical
-  const [overallUptime, setOverallUptime] = useState(99.97);
   const [activeConnections, setActiveConnections] = useState(1247);
   const [errorCount, setErrorCount] = useState(0);
   const [logs, setLogs] = useState([]);
@@ -99,62 +98,64 @@ const SystemHealthDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <Server className="w-8 h-8 text-blue-600" />
-                System Health Monitoring
-              </h1>
-              <p className="mt-2 text-gray-600">
-                Real-time monitoring of platform performance, uptime, and system metrics
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              {/* Live Mode Toggle */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Live Mode</span>
-                <button
-                  onClick={() => setIsLiveMode(!isLiveMode)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    isLiveMode ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      isLiveMode ? 'translate-x-6' : 'translate-x-1'
+        <AnimatePresence>
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                  <Server className="w-8 h-8 text-blue-600" />
+                  System Health Monitoring
+                </h1>
+                <p className="mt-2 text-gray-600">
+                  Real-time monitoring of platform performance, uptime, and system metrics
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                {/* Live Mode Toggle */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Live Mode</span>
+                  <button
+                    onClick={() => setIsLiveMode(!isLiveMode)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      isLiveMode ? 'bg-blue-600' : 'bg-gray-200'
                     }`}
-                  />
-                </button>
-                {isLiveMode && (
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                    className="w-2 h-2 bg-red-500 rounded-full"
-                  />
-                )}
-              </div>
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        isLiveMode ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                  {isLiveMode && (
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                      className="w-2 h-2 bg-red-500 rounded-full"
+                    />
+                  )}
+                </div>
 
-              {/* System Status Badge */}
-              <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${getStatusColor(systemStatus)}`}>
-                {getStatusIcon(systemStatus)}
-                <span className="text-sm font-medium capitalize">
-                  {systemStatus}
-                </span>
-              </div>
+                {/* System Status Badge */}
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${getStatusColor(systemStatus)}`}>
+                  {getStatusIcon(systemStatus)}
+                  <span className="text-sm font-medium capitalize">
+                    {systemStatus}
+                  </span>
+                </div>
 
-              {/* Last Updated */}
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Clock className="w-4 h-4" />
-                {isLiveMode ? 'Live' : 'Snapshot'} • {lastUpdated.toLocaleTimeString()}
+                {/* Last Updated */}
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Clock className="w-4 h-4" />
+                  {isLiveMode ? 'Live' : 'Snapshot'} • {lastUpdated.toLocaleTimeString()}
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -167,7 +168,7 @@ const SystemHealthDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Uptime</p>
-                  <p className="text-2xl font-bold text-gray-900">{overallUptime}%</p>
+                  <p className="text-2xl font-bold text-gray-900">99.97%</p>
                 </div>
                 <div className="p-2 bg-green-100 rounded-lg">
                   <TrendingUp className="w-6 h-6 text-green-600" />

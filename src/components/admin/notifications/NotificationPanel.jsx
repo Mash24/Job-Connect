@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, AlertTriangle, Info, XCircle, Clock, User, Mail, MessageSquare, Zap, Database, Server } from 'lucide-react';
+import { AnimatePresence } from 'framer-react';
+import { AlertTriangle, Info, XCircle, Clock, User, Mail, MessageSquare, Zap, Database, Server } from 'lucide-react';
 
 const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
   const [selectedNotification, setSelectedNotification] = useState(null);
@@ -75,9 +75,7 @@ const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
 
   if (notifications.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+      <div
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center"
       >
         <div className="max-w-md mx-auto">
@@ -89,7 +87,7 @@ const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
             You're all caught up! New notifications will appear here when they arrive.
           </p>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
@@ -119,7 +117,7 @@ const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
       <div className="max-h-96 overflow-y-auto">
         <AnimatePresence>
           {notifications.map((notification, index) => (
-            <motion.div
+            <div
               key={notification.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -217,7 +215,7 @@ const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           ))}
         </AnimatePresence>
       </div>
@@ -225,14 +223,14 @@ const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
       {/* Notification Detail Modal */}
       <AnimatePresence>
         {selectedNotification && (
-          <motion.div
+          <div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
             onClick={() => setSelectedNotification(null)}
           >
-            <motion.div
+            <div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -320,8 +318,8 @@ const NotificationPanel = ({ notifications, onMarkAsRead, onMarkAllRead }) => {
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
       </AnimatePresence>
     </div>

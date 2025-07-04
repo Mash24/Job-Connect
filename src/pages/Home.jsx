@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ErrorBoundary } from 'react-error-boundary';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   Search, TrendingUp, Users, Briefcase, 
   MapPin, DollarSign, Star, ArrowRight,
@@ -31,9 +31,7 @@ import performanceMonitor from '../services/performance';
 
 // Error fallback component
 const ErrorFallback = ({ error, resetErrorBoundary }) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
+  <div 
     role="alert" 
     className="p-6 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl shadow-lg"
   >
@@ -45,7 +43,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => (
     >
       Try again
     </button>
-  </motion.div>
+  </div>
 );
 
 /**
@@ -75,9 +73,7 @@ const LiveStats = () => {
   }, []);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div 
       className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20"
     >
       <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -85,36 +81,32 @@ const LiveStats = () => {
         Live Platform Stats
       </h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <motion.div 
+        <div 
           className="text-center"
-          whileHover={{ scale: 1.05 }}
         >
           <div className="text-2xl font-bold text-white">{stats.jobs.toLocaleString()}</div>
           <div className="text-sm text-white/80">Active Jobs</div>
-        </motion.div>
-        <motion.div 
+        </div>
+        <div 
           className="text-center"
-          whileHover={{ scale: 1.05 }}
         >
           <div className="text-2xl font-bold text-white">{stats.companies.toLocaleString()}</div>
           <div className="text-sm text-white/80">Companies</div>
-        </motion.div>
-        <motion.div 
+        </div>
+        <div 
           className="text-center"
-          whileHover={{ scale: 1.05 }}
         >
           <div className="text-2xl font-bold text-white">{stats.users.toLocaleString()}</div>
           <div className="text-sm text-white/80">Users</div>
-        </motion.div>
-        <motion.div 
+        </div>
+        <div 
           className="text-center"
-          whileHover={{ scale: 1.05 }}
         >
           <div className="text-2xl font-bold text-white">{stats.successRate.toFixed(1)}%</div>
           <div className="text-sm text-white/80">Success Rate</div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -131,27 +123,19 @@ const QuickActions = () => {
   ];
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
+    <div 
       className="flex flex-wrap gap-3 justify-center"
     >
-      {actions.map((action, index) => (
-        <motion.button
+      {actions.map((action) => (
+        <button
           key={action.label}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 + index * 0.1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium transition-all ${action.color}`}
         >
           <action.icon className="w-4 h-4" />
           {action.label}
-        </motion.button>
+        </button>
       ))}
-    </motion.div>
+    </div>
   );
 };
 
@@ -174,17 +158,11 @@ const FloatingActionButton = () => {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        <button
           className="fixed bottom-6 right-6 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50 flex items-center justify-center"
         >
           <ArrowRight className="w-5 h-5 rotate-[-90deg]" />
-        </motion.button>
+        </button>
       )}
     </AnimatePresence>
   );
@@ -235,159 +213,107 @@ const Home = () => {
 
       <main className="relative">
         {/* Hero Section */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
+        <div
         >
           <Hero />
-        </motion.section>
+        </div>
 
         {/* Enhanced Search Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+        <div
           className="relative z-10 -mt-8"
         >
           <div className="max-w-4xl mx-auto px-4">
             <SearchBar />
           </div>
-        </motion.section>
+        </div>
 
         {/* Quick Actions */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+        <div
           className="py-8 bg-gradient-to-r from-blue-50 to-purple-50"
         >
           <div className="max-w-6xl mx-auto px-4">
             <QuickActions />
           </div>
-        </motion.section>
+        </div>
 
         {/* Live Stats */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
+        <div
           className="py-8 bg-gradient-to-r from-blue-600 to-purple-600"
         >
           <div className="max-w-6xl mx-auto px-4">
             <LiveStats />
           </div>
-        </motion.section>
+        </div>
 
         {/* Job Categories */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16"
         >
           <JobCategories />
-        </motion.section>
+        </div>
 
         {/* Featured Jobs */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16 bg-gray-50"
         >
           <FeaturedJobs />
-        </motion.section>
+        </div>
 
         {/* Company Logos */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16"
         >
           <CompanyLogos />
-        </motion.section>
+        </div>
 
         {/* Features */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16 bg-gradient-to-r from-blue-50 to-purple-50"
         >
           <Features />
-        </motion.section>
+        </div>
 
         {/* How It Works */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16"
         >
           <HowItWorks />
-        </motion.section>
+        </div>
 
         {/* Testimonials */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16 bg-gray-50"
         >
           <Testimonials />
-        </motion.section>
+        </div>
 
         {/* Salary Calculator */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16"
         >
           <SalaryCalculator />
-        </motion.section>
+        </div>
 
         {/* Skills Assessment */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16 bg-gradient-to-r from-green-50 to-blue-50"
         >
           <SkillsAssessment />
-        </motion.section>
+        </div>
 
         {/* FAQ */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16"
         >
           <FAQ />
-        </motion.section>
+        </div>
 
         {/* Final CTA */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <div
           className="py-16 bg-gradient-to-r from-blue-600 to-purple-600"
         >
           <FinalCTA />
-        </motion.section>
+        </div>
       </main>
 
       <Footer />
@@ -396,17 +322,11 @@ const Home = () => {
       <FloatingActionButton />
 
       {/* Audio Control (for background music if added) */}
-      <motion.button
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsMuted(!isMuted)}
+      <button
         className="fixed top-6 right-6 w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full shadow-lg hover:bg-white/30 transition-colors z-50 flex items-center justify-center"
       >
         {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-      </motion.button>
+      </button>
     </ErrorBoundary>
   );
 };

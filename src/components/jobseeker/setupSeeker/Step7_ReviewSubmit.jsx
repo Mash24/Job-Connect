@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { auth, db } from '../../../firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -36,12 +35,7 @@ const Step7_ReviewSubmit = ({ onSubmitFinal, onBack }) => {
   if (!userData) return <div className="text-center py-10 text-red-500">No data available.</div>;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-4xl mx-auto bg-white shadow-md p-8 rounded-lg"
-    >
+    <div className="max-w-4xl mx-auto bg-white shadow-md p-8 rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-blue-700">Step 7: Review & Submit</h2>
 
       <div className="space-y-4">
@@ -80,7 +74,7 @@ const Step7_ReviewSubmit = ({ onSubmitFinal, onBack }) => {
         <button onClick={onBack} className="bg-gray-300 px-6 py-2 rounded hover:bg-gray-400">Back</button>
         <button onClick={onSubmitFinal} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-800">Confirm & Submit</button>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

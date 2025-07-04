@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { 
   Search, MapPin, Briefcase, Filter, 
   TrendingUp, Clock, Star, X
@@ -140,18 +140,10 @@ const SearchBar = () => {
     });
   };
 
-  const clearSearch = () => {
-    setSearchParams({ query: '', location: '', category: '' });
-    setShowSuggestions(false);
-  };
-
   return (
     <section className="w-full px-4 md:px-20 py-8 bg-gradient-to-r from-blue-50 to-purple-50">
       <div className="max-w-6xl mx-auto">
-        <motion.form 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+        <form 
           onSubmit={handleSearch} 
           className="bg-white rounded-xl shadow-xl p-4 md:p-6 border border-gray-100"
           ref={searchRef}
@@ -183,10 +175,7 @@ const SearchBar = () => {
               {/* Query Suggestions */}
               <AnimatePresence>
                 {showSuggestions && suggestions.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                  <div
                     className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg"
                   >
                     {suggestions.map((suggestion, index) => (
@@ -200,7 +189,7 @@ const SearchBar = () => {
                         {suggestion}
                       </button>
                     ))}
-                  </motion.div>
+                  </div>
                 )}
               </AnimatePresence>
             </div>
@@ -231,10 +220,7 @@ const SearchBar = () => {
               {/* Location Suggestions */}
               <AnimatePresence>
                 {showSuggestions && suggestions.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                  <div
                     className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg"
                   >
                     {suggestions.map((suggestion, index) => (
@@ -248,7 +234,7 @@ const SearchBar = () => {
                         {suggestion}
                       </button>
                     ))}
-                  </motion.div>
+                  </div>
                 )}
               </AnimatePresence>
             </div>
@@ -274,22 +260,18 @@ const SearchBar = () => {
             </div>
 
             {/* Search Button */}
-            <motion.button
+            <button
               type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center justify-center font-medium shadow-lg"
             >
               <Search className="w-5 h-5 mr-2" />
               Search Jobs
-            </motion.button>
+            </button>
           </div>
 
           {/* Recent Searches */}
           {recentSearches.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+            <div
               className="mt-4 pt-4 border-t border-gray-200"
             >
               <div className="flex items-center gap-2 mb-2">
@@ -298,11 +280,9 @@ const SearchBar = () => {
               </div>
               <div className="flex flex-wrap gap-2">
                 {recentSearches.map((search, index) => (
-                  <motion.button
+                  <button
                     key={index}
                     type="button"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       // Parse recent search and populate form
                       const parts = search.split(' ');
@@ -315,43 +295,36 @@ const SearchBar = () => {
                     className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
                   >
                     {search}
-                  </motion.button>
+                  </button>
                 ))}
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* Advanced Search Link */}
           <div className="mt-4 flex items-center justify-between">
-            <motion.button
+            <button
               type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={() => setShowAdvanced(!showAdvanced)}
               className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
             >
               <Filter className="w-4 h-4" />
               {showAdvanced ? 'Hide' : 'Show'} Advanced Options
-            </motion.button>
+            </button>
             
-            <motion.button
+            <button
               type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/jobs/advanced-search')}
               className="text-blue-600 hover:text-blue-800 text-sm font-medium"
             >
               Advanced Search
-            </motion.button>
+            </button>
           </div>
 
           {/* Advanced Options */}
           <AnimatePresence>
             {showAdvanced && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
+              <div
                 className="mt-4 pt-4 border-t border-gray-200"
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -384,10 +357,10 @@ const SearchBar = () => {
                     </select>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
-        </motion.form>
+        </form>
       </div>
     </section>
   );

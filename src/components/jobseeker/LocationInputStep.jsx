@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { FaCity, FaGlobeAmericas, FaLocationArrow, FaMapMarkedAlt, FaMapPin } from 'react-icons/fa';
 import countryList from 'react-select-country-list';
 
@@ -57,7 +56,7 @@ const LocationInputStep = ( {onSave}) => {
   };
 
   return (
-    <motion.div>
+    <div>
       <h2 className="text-xl p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto">📍 Location Information</h2>
       <button onClick={handleUseMyLocation} className="text-blue-600 text-sm underline mb-4">
         <FaLocationArrow className='inline mr-2' /> Use My Current Location
@@ -125,7 +124,7 @@ const LocationInputStep = ( {onSave}) => {
           <button type='submit' className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-800">Save & Continue </button>
         </div>
       </form>
-    </motion.div>
+    </div>
   );
 };
 
