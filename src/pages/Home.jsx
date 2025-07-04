@@ -169,8 +169,6 @@ const FloatingActionButton = () => {
 };
 
 const Home = () => {
-  const [isMuted, setIsMuted] = useState(false);
-
   useEffect(() => {
     // Track page view
     trackPageView('Home');
@@ -325,7 +323,7 @@ const Home = () => {
       <button
         className="fixed top-6 right-6 w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full shadow-lg hover:bg-white/30 transition-colors z-50 flex items-center justify-center"
       >
-        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+        <VolumeX className="w-4 h-4" />
       </button>
     </ErrorBoundary>
   );

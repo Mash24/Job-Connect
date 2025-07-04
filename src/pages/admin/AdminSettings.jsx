@@ -84,7 +84,7 @@ const AdminSettings = () => {
     fetchSettings();
   }, [docRef]);
 
-  const updateField = async (field, value) => {
+  const updateField = useCallback(async (field, value) => {
     setSavingField(field);
     setErrorField(null);
     try {
@@ -97,9 +97,11 @@ const AdminSettings = () => {
     } finally {
       setSavingField(null);
     }
-  };
+  }, [docRef]);
 
-  const debouncedUpdate = useCallback(debounce(updateField, 600), []);
+  const debouncedUpdate = useCallback((field, value) => {
+    debounce(updateField, 600)(field, value);
+  }, [updateField]);
 
   const handleChange = (field) => (e) => {
     const value = e.target.value;

@@ -57,11 +57,11 @@ const ServerStatusCard = ({ isLiveMode }) => {
     );
   };
 
-  const MetricItem = ({ icon: Icon, label, value, unit = '%' }) => (
+  const MetricItem = ({ label, value, unit = '%' }) => (
     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-white rounded-lg shadow-sm">
-          <Icon className="w-5 h-5 text-gray-600" />
+          {/* Icon placeholder, as the Icon parameter is no longer used */}
         </div>
         <div>
           <p className="text-sm font-medium text-gray-700">{label}</p>
@@ -87,10 +87,10 @@ const ServerStatusCard = ({ isLiveMode }) => {
         </div>
       </div>
       <div className="space-y-4">
-        <MetricItem icon={Cpu} label="CPU Usage" value={metrics.cpu} />
-        <MetricItem icon={Memory} label="Memory Usage" value={metrics.memory} />
-        <MetricItem icon={HardDrive} label="Disk Usage" value={metrics.disk} />
-        <MetricItem icon={Network} label="Network I/O" value={metrics.network} />
+        <MetricItem label="CPU Usage" value={metrics.cpu} />
+        <MetricItem label="Memory Usage" value={metrics.memory} />
+        <MetricItem label="Disk Usage" value={metrics.disk} />
+        <MetricItem label="Network I/O" value={metrics.network} />
       </div>
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="grid grid-cols-2 gap-4 text-sm">

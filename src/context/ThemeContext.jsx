@@ -1,7 +1,6 @@
 // context/ThemeContext.js
-import { createContext, useContext, useState } from 'react';
-
-const ThemeContext = createContext();
+import { useContext, useState } from 'react';
+import ThemeContext from './ThemeContextInstance';
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('dark');

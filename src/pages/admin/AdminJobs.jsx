@@ -19,10 +19,9 @@ import JobTable from '../../components/admin/tables/JobTable';
  * @function generateJobId
  * @description Generates a unique job identifier with prefix and timestamp
  * @param {string} company - Company name for prefix
- * @param {string} title - Job title for prefix
  * @returns {string} Unique job ID (e.g., "JOB-ABC-2024-001")
  */
-const generateJobId = (company, title) => {
+const generateJobId = (company) => {
   const prefix = company?.substring(0, 3).toUpperCase() || 'JOB';
   const year = new Date().getFullYear();
   const timestamp = Date.now().toString().slice(-3);
@@ -93,7 +92,7 @@ const AdminJobs = () => {
         return { 
           id: doc.id, 
           ...data,
-          jobId: data.jobId || generateJobId(data.company, data.title),
+          jobId: data.jobId || generateJobId(data.company),
           createdAt: data.createdAt?.toDate() || new Date(),
           priority: data.priority || 'normal',
           applications: data.applications || 0,
@@ -108,7 +107,7 @@ const AdminJobs = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [calculateJobStats]);
 
   const calculateJobStats = useCallback((jobList) => {
     const uniqueEmployers = new Set(jobList.map(job => job.employerId || job.company)).size;

@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { auth, db } from '../../firebase/config';
 import { doc, getDoc, collection, getDocs, query, orderBy, where } from 'firebase/firestore';
-import { motion } from 'framer-motion';
 
 import ApplicationsOverTime from '../../components/admin/charts/ApplicationsOverTime';
 // import UserSignupsOverTime from '../../components/admin/charts/UserSignupsOverTime';
@@ -102,7 +101,7 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
-  }, [selectedTimeframe]);
+  }, [selectedTimeframe, generateAlerts]);
 
   useEffect(() => {
     const checkAdmin = async () => {

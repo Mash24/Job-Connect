@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { 
   Megaphone, Loader2, Trash2, Plus, Edit, Eye, 
@@ -57,42 +57,7 @@ const AdminAnnouncements = () => {
     highPriority: 0
   });
 
-  useEffect(() => {
-    const q = query(
-      collection(db, 'announcements'),
-      orderBy('timestamp', 'desc')
-    );
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate() || new Date()
-      }));
-      setAnnouncements(data);
-      calculateStats(data);
-    });
-    
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, announcements, applyFilters]);
-
-  const calculateStats = (announcementList) => {
-    const now = new Date();
-    const stats = {
-      total: announcementList.length,
-      active: announcementList.filter(a => a.isActive && (!a.expiresAt || new Date(a.expiresAt) > now)).length,
-      scheduled: announcementList.filter(a => a.scheduledFor && new Date(a.scheduledFor) > now).length,
-      expired: announcementList.filter(a => a.expiresAt && new Date(a.expiresAt) <= now).length,
-      highPriority: announcementList.filter(a => a.priority === 'high').length
-    };
-    setAnnouncementStats(stats);
-  };
-
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...announcements];
 
     // Status filter
@@ -140,6 +105,41 @@ const AdminAnnouncements = () => {
     }
 
     setFilteredAnnouncements(filtered);
+  }, [announcements, filters]);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, 'announcements'),
+      orderBy('timestamp', 'desc')
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data(),
+        timestamp: doc.data().timestamp?.toDate() || new Date()
+      }));
+      setAnnouncements(data);
+      calculateStats(data);
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [filters, announcements, applyFilters]);
+
+  const calculateStats = (announcementList) => {
+    const now = new Date();
+    const stats = {
+      total: announcementList.length,
+      active: announcementList.filter(a => a.isActive && (!a.expiresAt || new Date(a.expiresAt) > now)).length,
+      scheduled: announcementList.filter(a => a.scheduledFor && new Date(a.scheduledFor) > now).length,
+      expired: announcementList.filter(a => a.expiresAt && new Date(a.expiresAt) <= now).length,
+      highPriority: announcementList.filter(a => a.priority === 'high').length
+    };
+    setAnnouncementStats(stats);
   };
 
   const handleSubmit = async (e) => {
@@ -658,7 +658,7 @@ const AdminAnnouncements = () => {
             </div>
           ) : (
             <AnimatePresence>
-              {filteredAnnouncements.map((announcement, index) => (
+              {filteredAnnouncements.map((announcement) => (
                 <div
                   key={announcement.id}
                   className={`bg-white rounded-lg shadow-sm border p-6 ${getPriorityColor(announcement.priority)}`}

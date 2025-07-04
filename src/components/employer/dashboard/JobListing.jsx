@@ -52,10 +52,10 @@ const JobListing = () => {
     );
   }).length;
 
-  const StatCard = ({ icon: Icon, label, value }) => (
+  const StatCard = ({ label, value }) => (
     <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4 border hover:shadow-md transition">
       <div className="bg-blue-100 text-blue-600 p-3 rounded-full">
-        <Icon size={20} />
+        <Briefcase size={20} />
       </div>
       <div>
         <p className="text-2xl font-bold">{value}</p>
@@ -71,10 +71,10 @@ const JobListing = () => {
         <p className="text-gray-500">Loading stats...</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          <StatCard icon={Briefcase} label="Total Jobs Posted" value={totalJobs} />
-          <StatCard icon={Clock} label="Active Jobs" value={activeJobs} />
-          <StatCard icon={Globe} label="Remote Jobs" value={remoteJobs} />
-          <StatCard icon={CalendarDays} label="Jobs This Month" value={jobsThisMonth} />
+          <StatCard label="Total Jobs Posted" value={totalJobs} />
+          <StatCard label="Active Jobs" value={activeJobs} />
+          <StatCard label="Remote Jobs" value={remoteJobs} />
+          <StatCard label="Jobs This Month" value={jobsThisMonth} />
         </div>
       )}
     </div>

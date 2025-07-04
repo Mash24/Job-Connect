@@ -187,7 +187,7 @@ const RecentActivityFeed = () => {
                   { key: 'application', label: 'Applications', icon: FileText },
                   { key: 'system', label: 'System', icon: Settings },
                   { key: 'auth', label: 'Auth', icon: Shield }
-                ].map(({ key, label, icon: Icon }) => (
+                ].map(({ key, label }) => (
                   <button
                     key={key}
                     onClick={() => setFilter(key)}
@@ -197,7 +197,6 @@ const RecentActivityFeed = () => {
                         : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                     }`}
                   >
-                    <Icon className="w-3 h-3" />
                     {label}
                     <span className="ml-1 px-1.5 py-0.5 bg-white/20 rounded-full text-xs">
                       {getFilterCount(key)}
@@ -232,7 +231,7 @@ const RecentActivityFeed = () => {
         ) : (
           <div className="divide-y divide-gray-100">
             <AnimatePresence>
-              {filteredLogs.map((log, index) => {
+              {filteredLogs.map((log) => {
                 const typeConfig = typeIcons[log.type] || typeIcons.system;
                 const priorityClass = priorityColors[log.priority] || priorityColors.info;
                 
