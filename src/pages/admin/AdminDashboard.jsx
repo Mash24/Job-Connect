@@ -38,6 +38,38 @@ const AdminDashboard = () => {
     errorRate: '0.1%'
   });
 
+  const generateAlerts = useCallback((users, jobs, applications) => {
+    const alerts = [];
+    
+    // Check for inactive jobs
+    const inactiveJobs = jobs.filter(job => job.status === 'inactive');
+    if (inactiveJobs.length > 10) {
+      alerts.push({
+        id: 'inactive-jobs',
+        type: 'warning',
+        title: 'High Number of Inactive Jobs',
+        message: `${inactiveJobs.length} jobs are currently inactive`,
+        icon: AlertTriangle,
+        action: () => navigate('/admin/jobs')
+      });
+    }
+
+    // Check for pending applications
+    const pendingApps = applications.filter(app => app.status === 'pending');
+    if (pendingApps.length > 20) {
+      alerts.push({
+        id: 'pending-applications',
+        type: 'info',
+        title: 'Applications Pending Review',
+        message: `${pendingApps.length} applications need attention`,
+        icon: Clock,
+        action: () => navigate('/admin/applications')
+      });
+    }
+
+    return alerts;
+  }, [navigate]);
+
   const fetchDashboardData = useCallback(async () => {
     try {
       const now = new Date();
@@ -179,38 +211,6 @@ const AdminDashboard = () => {
       conversionRate: recentUsers.length > 0 ? (recentApps.length / recentUsers.length) * 100 : 0
     };
   };
-
-  const generateAlerts = useCallback((users, jobs, applications) => {
-    const alerts = [];
-    
-    // Check for inactive jobs
-    const inactiveJobs = jobs.filter(job => job.status === 'inactive');
-    if (inactiveJobs.length > 10) {
-      alerts.push({
-        id: 'inactive-jobs',
-        type: 'warning',
-        title: 'High Number of Inactive Jobs',
-        message: `${inactiveJobs.length} jobs are currently inactive`,
-        icon: AlertTriangle,
-        action: () => navigate('/admin/jobs')
-      });
-    }
-
-    // Check for pending applications
-    const pendingApps = applications.filter(app => app.status === 'pending');
-    if (pendingApps.length > 20) {
-      alerts.push({
-        id: 'pending-applications',
-        type: 'info',
-        title: 'Applications Pending Review',
-        message: `${pendingApps.length} applications need attention`,
-        icon: Clock,
-        action: () => navigate('/admin/applications')
-      });
-    }
-
-    return alerts;
-  }, [navigate]);
 
   const getGrowthIcon = (growth) => {
     if (growth > 0) return <ArrowUpRight className="w-4 h-4 text-green-600" />;
