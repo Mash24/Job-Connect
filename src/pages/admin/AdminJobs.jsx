@@ -82,6 +82,24 @@ const AdminJobs = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [copiedJobId, setCopiedJobId] = useState(null);
 
+  // Move calculateJobStats here, above fetchJobs
+  const calculateJobStats = useCallback((jobList) => {
+    const uniqueEmployers = new Set(jobList.map(job => job.employerId || job.company)).size;
+    const stats = {
+      total: jobList.length,
+      active: jobList.filter(job => job.status === 'active').length,
+      pending: jobList.filter(job => job.status === 'pending').length,
+      expired: jobList.filter(job => job.status === 'expired').length,
+      applications: jobList.reduce((sum, job) => sum + (job.applications || 0), 0),
+      avgSalary: jobList.length > 0 
+        ? jobList.reduce((sum, job) => sum + (job.salary || 0), 0) / jobList.length 
+        : 0,
+      uniqueEmployers,
+      highPriority: jobList.filter(job => job.priority === 'high').length
+    };
+    setJobStats(stats);
+  }, []);
+
   const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
@@ -108,23 +126,6 @@ const AdminJobs = () => {
       setLoading(false);
     }
   }, [calculateJobStats]);
-
-  const calculateJobStats = useCallback((jobList) => {
-    const uniqueEmployers = new Set(jobList.map(job => job.employerId || job.company)).size;
-    const stats = {
-      total: jobList.length,
-      active: jobList.filter(job => job.status === 'active').length,
-      pending: jobList.filter(job => job.status === 'pending').length,
-      expired: jobList.filter(job => job.status === 'expired').length,
-      applications: jobList.reduce((sum, job) => sum + (job.applications || 0), 0),
-      avgSalary: jobList.length > 0 
-        ? jobList.reduce((sum, job) => sum + (job.salary || 0), 0) / jobList.length 
-        : 0,
-      uniqueEmployers,
-      highPriority: jobList.filter(job => job.priority === 'high').length
-    };
-    setJobStats(stats);
-  }, []);
 
   const applyFilters = useCallback(() => {
     let filtered = [...jobs];

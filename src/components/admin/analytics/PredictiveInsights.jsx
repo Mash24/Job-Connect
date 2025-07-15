@@ -15,6 +15,47 @@ const PredictiveInsights = ({ data }) => {
   const [forecastData, setForecastData] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const calculateLinearRegression = useCallback((xValues, yValues) => {
+    const n = xValues.length;
+    const xMean = xValues.reduce((sum, x) => sum + x, 0) / n;
+    const yMean = yValues.reduce((sum, y) => sum + y, 0) / n;
+    let numerator = 0;
+    let denominator = 0;
+    for (let i = 0; i < n; i++) {
+      numerator += (xValues[i] - xMean) * (yValues[i] - yMean);
+      denominator += (xValues[i] - xMean) ** 2;
+    }
+    const slope = denominator !== 0 ? numerator / denominator : 0;
+    const intercept = yMean - slope * xMean;
+    return { slope, intercept };
+  }, []);
+
+  const calculateForecast = useCallback((historicalData, forecastDays) => {
+    if (historicalData.length < 2) {
+      return historicalData;
+    }
+    // Calculate linear trend
+    const n = historicalData.length;
+    const xValues = Array.from({ length: n }, (_, i) => i);
+    const yValues = historicalData.map(d => d.count);
+    // Linear regression: y = mx + b
+    const { slope, intercept } = calculateLinearRegression(xValues, yValues);
+    // Generate forecast data
+    const forecastData = [...historicalData];
+    const lastDate = new Date(historicalData[historicalData.length - 1].date);
+    for (let i = 1; i <= forecastDays; i++) {
+      const forecastDate = new Date(lastDate);
+      forecastDate.setDate(forecastDate.getDate() + i);
+      const forecastValue = Math.max(0, slope * (n + i - 1) + intercept);
+      forecastData.push({
+        date: forecastDate.toISOString().split('T')[0],
+        count: Math.round(forecastValue),
+        isForecast: true
+      });
+    }
+    return forecastData;
+  }, [calculateLinearRegression]);
+
   // Generate historical data for forecasting
   const generateForecastData = useCallback(() => {
     setLoading(true);
@@ -56,47 +97,6 @@ const PredictiveInsights = ({ data }) => {
       .map(([date, count]) => ({ date, count }))
       .sort((a, b) => new Date(a.date) - new Date(b.date));
   };
-
-  const calculateForecast = useCallback((historicalData, forecastDays) => {
-    if (historicalData.length < 2) {
-      return historicalData;
-    }
-    // Calculate linear trend
-    const n = historicalData.length;
-    const xValues = Array.from({ length: n }, (_, i) => i);
-    const yValues = historicalData.map(d => d.count);
-    // Linear regression: y = mx + b
-    const { slope, intercept } = calculateLinearRegression(xValues, yValues);
-    // Generate forecast data
-    const forecastData = [...historicalData];
-    const lastDate = new Date(historicalData[historicalData.length - 1].date);
-    for (let i = 1; i <= forecastDays; i++) {
-      const forecastDate = new Date(lastDate);
-      forecastDate.setDate(forecastDate.getDate() + i);
-      const forecastValue = Math.max(0, slope * (n + i - 1) + intercept);
-      forecastData.push({
-        date: forecastDate.toISOString().split('T')[0],
-        count: Math.round(forecastValue),
-        isForecast: true
-      });
-    }
-    return forecastData;
-  }, [calculateLinearRegression]);
-
-  const calculateLinearRegression = useCallback((xValues, yValues) => {
-    const n = xValues.length;
-    const xMean = xValues.reduce((sum, x) => sum + x, 0) / n;
-    const yMean = yValues.reduce((sum, y) => sum + y, 0) / n;
-    let numerator = 0;
-    let denominator = 0;
-    for (let i = 0; i < n; i++) {
-      numerator += (xValues[i] - xMean) * (yValues[i] - yMean);
-      denominator += (xValues[i] - xMean) ** 2;
-    }
-    const slope = denominator !== 0 ? numerator / denominator : 0;
-    const intercept = yMean - slope * xMean;
-    return { slope, intercept };
-  }, []);
 
   const getMetricColor = (metric) => {
     switch (metric) {

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import ThemeContext from './ThemeContextInstance';
+import ThemeContext from '../context/ThemeContextInstance';
 
 /**
  * @fileoverview ThemeContext

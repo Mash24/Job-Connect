@@ -32,45 +32,6 @@ const AdminLogs = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [logLimit, setLogLimit] = useState(100);
 
-  useEffect(() => {
-    const q = query(
-      collection(db, 'logs'), 
-      orderBy('timestamp', 'desc'),
-      limit(logLimit)
-    );
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map((doc) => ({ 
-        id: doc.id, 
-        ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate() || new Date()
-      }));
-      setLogs(list);
-      calculateLogStats(list);
-      setLoading(false);
-    }, (error) => {
-      console.error('Error fetching logs:', error);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [logLimit]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
-
-  const calculateLogStats = (logList) => {
-    const stats = {
-      total: logList.length,
-      errors: logList.filter(log => log.level === 'error').length,
-      warnings: logList.filter(log => log.level === 'warning').length,
-      info: logList.filter(log => log.level === 'info').length,
-      success: logList.filter(log => log.level === 'success').length
-    };
-    setLogStats(stats);
-  };
-
   const applyFilters = useCallback(() => {
     let filtered = [...logs];
 
@@ -114,6 +75,45 @@ const AdminLogs = () => {
 
     setFilteredLogs(filtered);
   }, [filters, logs]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, 'logs'), 
+      orderBy('timestamp', 'desc'),
+      limit(logLimit)
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list = snapshot.docs.map((doc) => ({ 
+        id: doc.id, 
+        ...doc.data(),
+        timestamp: doc.data().timestamp?.toDate() || new Date()
+      }));
+      setLogs(list);
+      calculateLogStats(list);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error fetching logs:', error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [logLimit]);
+
+  const calculateLogStats = (logList) => {
+    const stats = {
+      total: logList.length,
+      errors: logList.filter(log => log.level === 'error').length,
+      warnings: logList.filter(log => log.level === 'warning').length,
+      info: logList.filter(log => log.level === 'info').length,
+      success: logList.filter(log => log.level === 'success').length
+    };
+    setLogStats(stats);
+  };
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));

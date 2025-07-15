@@ -6,6 +6,7 @@ import {
   ArrowUpRight, ArrowDownRight, Minus, Eye, Settings,
   MessageSquare, FileText, Shield, Globe, DollarSign
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { auth, db } from '../../firebase/config';
 import { doc, getDoc, collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 
@@ -226,7 +227,7 @@ const AdminDashboard = () => {
 
   const renderQuickActions = () => (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <motion.button
+      <button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => navigate('/admin/analytics')}
@@ -235,9 +236,9 @@ const AdminDashboard = () => {
         <BarChart3 className="w-6 h-6 mb-2" />
         <p className="font-semibold">Analytics</p>
         <p className="text-sm opacity-90">View Insights</p>
-      </motion.button>
+      </button>
 
-      <motion.button
+      <button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => navigate('/admin/users')}
@@ -246,9 +247,9 @@ const AdminDashboard = () => {
         <Users className="w-6 h-6 mb-2" />
         <p className="font-semibold">Users</p>
         <p className="text-sm opacity-90">Manage Users</p>
-      </motion.button>
+      </button>
 
-      <motion.button
+      <button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => navigate('/admin/jobs')}
@@ -257,9 +258,9 @@ const AdminDashboard = () => {
         <Briefcase className="w-6 h-6 mb-2" />
         <p className="font-semibold">Jobs</p>
         <p className="text-sm opacity-90">Manage Jobs</p>
-      </motion.button>
+      </button>
 
-      <motion.button
+      <button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => navigate('/admin/reports')}
@@ -268,7 +269,7 @@ const AdminDashboard = () => {
         <FileText className="w-6 h-6 mb-2" />
         <p className="font-semibold">Reports</p>
         <p className="text-sm opacity-90">Generate Reports</p>
-      </motion.button>
+      </button>
     </div>
   );
 

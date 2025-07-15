@@ -278,37 +278,35 @@ const JobTable = ({
             </tr>
           ))}
         </tbody>
-      </table>
-
-      {/* Summary Row */}
-      {jobs.length > 0 && (
-        <tfoot className="bg-gray-50 border-t border-gray-200">
-          <tr>
-            <td colSpan="10" className="px-4 py-3 text-sm text-gray-600">
-              <div className="flex items-center justify-between">
-                <span>
-                  Showing {jobs.length} job(s)
-                  {selectedJobs.size > 0 && ` • ${selectedJobs.size} selected`}
-                </span>
-                <div className="flex items-center gap-4 text-xs">
-                  <span className="flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3 text-red-600" />
-                    High Priority: {jobs.filter(j => j.priority === 'high').length}
+        {jobs.length > 0 && (
+          <tfoot className="bg-gray-50 border-t border-gray-200">
+            <tr>
+              <td colSpan="10" className="px-4 py-3 text-sm text-gray-600">
+                <div className="flex items-center justify-between">
+                  <span>
+                    Showing {jobs.length} job(s)
+                    {selectedJobs.size > 0 && ` • ${selectedJobs.size} selected`}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3 h-3 text-purple-600" />
-                    Total Applications: {jobs.reduce((sum, j) => sum + (j.applications || 0), 0)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3 text-green-600" />
-                    Active: {jobs.filter(j => j.status === 'active').length}
-                  </span>
+                  <div className="flex items-center gap-4 text-xs">
+                    <span className="flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3 text-red-600" />
+                      High Priority: {jobs.filter(j => j.priority === 'high').length}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3 h-3 text-purple-600" />
+                      Total Applications: {jobs.reduce((sum, j) => sum + (j.applications || 0), 0)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3 text-green-600" />
+                      Active: {jobs.filter(j => j.status === 'active').length}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-        </tfoot>
-      )}
+              </td>
+            </tr>
+          </tfoot>
+        )}
+      </table>
 
       {/* 🔍 View Job Modal */}
       {selectedJob && (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { Activity, Server, Database, Zap, AlertTriangle, TrendingUp, Clock, Wifi, WifiOff } from 'lucide-react';

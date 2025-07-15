@@ -349,18 +349,32 @@ const CustomReportBuilder = () => {
                   </button>
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {savedReports.slice(0, 5).map((report) => (
-                    <button
-                      key={report.id}
-                      onClick={() => loadReport(report)}
-                      className="w-full text-left p-3 hover:bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
-                    >
-                      <p className="text-sm font-medium text-gray-900 truncate">{report.title}</p>
-                      <p className="text-xs text-gray-500">
-                        {report.createdAt?.toLocaleDateString() || 'Unknown date'}
-                      </p>
-                    </button>
-                  ))}
+                  {savedReports.slice(0, 5).map((report) => {
+                    // Safe date formatting
+                    let dateObj;
+                    if (report.createdAt?.toDate) {
+                      dateObj = report.createdAt.toDate();
+                    } else if (report.createdAt instanceof Date) {
+                      dateObj = report.createdAt;
+                    } else if (typeof report.createdAt === 'string' || typeof report.createdAt === 'number') {
+                      dateObj = new Date(report.createdAt);
+                    } else {
+                      dateObj = null;
+                    }
+                    const dateString = dateObj ? dateObj.toLocaleDateString() : 'Unknown date';
+                    return (
+                      <button
+                        key={report.id}
+                        onClick={() => loadReport(report)}
+                        className="w-full text-left p-3 hover:bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
+                      >
+                        <p className="text-sm font-medium text-gray-900 truncate">{report.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {dateString}
+                        </p>
+                      </button>
+                    );
+                  })}
                   {savedReports.length === 0 && (
                     <p className="text-sm text-gray-500 text-center py-4">
                       No saved reports yet

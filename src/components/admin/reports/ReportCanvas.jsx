@@ -99,7 +99,7 @@ const ReportCanvas = ({
 
     if (isEditing) {
       return (
-        <motion.div
+        <Reorder.Item
           key={chart.id}
           layout
           initial={{ opacity: 0, scale: 0.9 }}
@@ -113,12 +113,12 @@ const ReportCanvas = ({
           style={{ width: chart.size?.width || '100%' }}
         >
           {chartContainer}
-        </motion.div>
+        </Reorder.Item>
       );
     }
 
     return (
-      <motion.div
+      <Reorder.Item
         key={chart.id}
         layout
         initial={{ opacity: 0, y: 20 }}
@@ -127,7 +127,7 @@ const ReportCanvas = ({
         style={{ width: chart.size?.width || '100%' }}
       >
         {chartContainer}
-      </motion.div>
+      </Reorder.Item>
     );
   };
 
@@ -339,7 +339,8 @@ const ReportCanvas = ({
 
       {/* Empty State */}
       {reportData.charts.length === 0 && isEditing && (
-        <motion.div
+        <Reorder.Item
+          layout
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="col-span-full text-center py-12"
@@ -360,7 +361,7 @@ const ReportCanvas = ({
               Add First Chart
             </button>
           </div>
-        </motion.div>
+        </Reorder.Item>
       )}
     </div>
   );
