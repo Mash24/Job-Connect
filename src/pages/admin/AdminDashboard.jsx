@@ -6,7 +6,6 @@ import {
   ArrowUpRight, ArrowDownRight, Minus, Eye, Settings,
   MessageSquare, FileText, Shield, Globe, DollarSign
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { auth, db } from '../../firebase/config';
 import { doc, getDoc, collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 
@@ -14,6 +13,9 @@ import ApplicationsOverTime from '../../components/admin/charts/ApplicationsOver
 // import UserSignupsOverTime from '../../components/admin/charts/UserSignupsOverTime';
 import JobStatusBreakdown from '../../components/admin/charts/JobStatusBreakdown';
 import RecentActivityFeed from '../../pages/admin/RecentActivityFeed';
+
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
