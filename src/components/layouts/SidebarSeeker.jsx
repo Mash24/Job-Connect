@@ -4,7 +4,7 @@ import { Home, FileText, HelpCircle, LogOut, Menu, Bell, MessageCircle, SunMoon,
 import { signOut } from 'firebase/auth';
 import { auth, db } from '../../firebase/config';
 import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore';
-import { useTheme } from '../../context/ThemeContext'; // Make sure this exists
+import { useTheme } from '../../contexts/ThemeContext';
 import UserAvatar from '../common/UserAvatar';
 
 const SidebarSeeker = () => {
